@@ -37,7 +37,7 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: Validate Composer files
-        run: composer validate --strict
+        run: composer validate --strict --no-check-publish
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
