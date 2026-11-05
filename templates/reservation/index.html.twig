@@ -1,0 +1,706 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes réservations - Wassalni{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 60px 0 80px 0;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(255,255,255,0.05)' fill-opacity='1' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E") repeat-x bottom;
+        background-size: cover;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .page-header h1 {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff, #c4b5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .page-header p {
+        font-size: 18px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+    
+    .container-custom {
+        max-width: 1200px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+        position: relative;
+        z-index: 3;
+    }
+    
+    /* Statistiques */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        text-align: center;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -12px rgba(76, 29, 149, 0.15);
+    }
+    
+    .stat-card .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    
+    .stat-card .stat-icon i {
+        font-size: 28px;
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 5px;
+    }
+    
+    .stat-card .stat-label {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    /* Filtres */
+    .filters-bar {
+        background: white;
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filter-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    
+    .filter-group select {
+        padding: 10px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .search-box input {
+        padding: 10px 16px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 14px;
+        width: 250px;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .search-box button {
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+    
+    /* Carte de réservation */
+    .reservation-card {
+        background: white;
+        border-radius: 24px;
+        margin-bottom: 24px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    .reservation-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
+    }
+    
+    .card-status {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        z-index: 1;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    .status-badge.confirmed {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #15803d;
+    }
+    
+    .status-badge.cancelled {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #b91c1c;
+    }
+    
+    .status-badge.pending {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #b45309;
+    }
+    
+    /* Badge Avis */
+    .avis-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        color: #0369a1;
+    }
+    
+    .btn-avis {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+    
+    .btn-avis:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+    }
+    
+    .card-content {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .card-left {
+        flex: 1;
+        padding: 24px;
+        border-right: 1px solid #f1f5f9;
+    }
+    
+    .journey {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .journey-point {
+        text-align: center;
+    }
+    
+    .journey-point .city {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    
+    .journey-point .date {
+        font-size: 13px;
+        color: #64748b;
+        margin-top: 5px;
+    }
+    
+    .journey-line {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #4c1d95;
+    }
+    
+    .journey-line i {
+        font-size: 20px;
+    }
+    
+    .journey-line .time {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 5px;
+    }
+    
+    .info-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #475569;
+    }
+    
+    .info-item i {
+        width: 20px;
+        color: #4c1d95;
+    }
+    
+    .card-right {
+        width: 280px;
+        padding: 24px;
+        padding-top: 80px;
+        background: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 12px;
+    }
+    
+    .price {
+        text-align: right;
+    }
+    
+    .price .amount {
+        font-size: 32px;
+        font-weight: 800;
+        color: #28a745;
+    }
+    
+    .price .per-person {
+        font-size: 12px;
+        color: #64748b;
+    }
+    
+    .places-info {
+        text-align: right;
+        margin: 15px 0;
+        font-size: 13px;
+        color: #64748b;
+    }
+    
+    .btn-cancel {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #b91c1c;
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+    
+    .btn-cancel:hover {
+        background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+        transform: translateY(-2px);
+    }
+    
+    .btn-view {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+    
+    .btn-view:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(76, 29, 149, 0.3);
+    }
+    
+    /* Empty state */
+    .empty-state {
+        background: white;
+        border-radius: 32px;
+        padding: 60px;
+        text-align: center;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+    }
+    
+    .empty-state i {
+        font-size: 80px;
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 24px;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 30px;
+    }
+    
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 32px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(76, 29, 149, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .card-left {
+            border-right: none;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .card-right {
+            width: 100%;
+            padding-top: 70px;
+        }
+        .journey {
+            flex-direction: column;
+        }
+        .filters-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .search-box {
+            flex-direction: column;
+        }
+        .search-box input {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1>Mes réservations</h1>
+        <p>Gérez vos trajets et vos réservations en toute simplicité</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="stat-number">{{ reservations|length }}</div>
+            <div class="stat-label">Total réservations</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-number">{{ reservations|filter(r => r.statut == 'CONFIRMEE')|length }}</div>
+            <div class="stat-label">Réservations actives</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-number">{{ reservations|filter(r => r.statut == 'ANNULEE')|length }}</div>
+            <div class="stat-label">Réservations annulées</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-number">
+                {% set total = 0 %}
+                {% for r in reservations %}
+                    {% if r.statut == 'CONFIRMEE' %}
+                        {% set total = total + r.prixTotal %}
+                    {% endif %}
+                {% endfor %}
+                {{ total }} DT
+            </div>
+            <div class="stat-label">Total dépensé</div>
+        </div>
+    </div>
+    
+    <!-- Barre de filtres -->
+    <div class="filters-bar">
+        <div class="filter-group">
+            <label><i class="fas fa-filter"></i> Filtrer par :</label>
+            <select id="statusFilter">
+                <option value="all">Tous les statuts</option>
+                <option value="CONFIRMEE">Confirmées</option>
+                <option value="ANNULEE">Annulées</option>
+            </select>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Rechercher une ville...">
+            <button id="searchBtn"><i class="fas fa-search"></i> Rechercher</button>
+        </div>
+    </div>
+    
+    <!-- Liste des réservations -->
+    <div id="reservationsList">
+        {% if reservations|length > 0 %}
+            {% for reservation in reservations %}
+                {% set aDonneAvis = false %}
+                {% for avis in reservation.passager.avisDonnes %}
+                    {% if avis.trajet.id == reservation.trajet.id %}
+                        {% set aDonneAvis = true %}
+                    {% endif %}
+                {% endfor %}
+                
+                <div class="reservation-card" data-status="{{ reservation.statut }}" data-city="{{ reservation.trajet.villeDepart }} {{ reservation.trajet.destination }}">
+                    <div class="card-status">
+                        {% if reservation.statut == 'CONFIRMEE' %}
+                            <span class="status-badge confirmed">
+                                <i class="fas fa-check-circle"></i> Confirmée
+                            </span>
+                        {% elseif reservation.statut == 'ANNULEE' %}
+                            <span class="status-badge cancelled">
+                                <i class="fas fa-times-circle"></i> Annulée
+                            </span>
+                        {% else %}
+                            <span class="status-badge pending">
+                                <i class="fas fa-clock"></i> En attente
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="card-left">
+                            <div class="journey">
+                                <div class="journey-point">
+                                    <div class="city">{{ reservation.trajet.villeDepart }}</div>
+                                    <div class="date">{{ reservation.trajet.dateDepart|date('d/m/Y') }}</div>
+                                </div>
+                                <div class="journey-line">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <div class="time">{{ reservation.trajet.dateDepart|date('H:i') }}</div>
+                                </div>
+                                <div class="journey-point">
+                                    <div class="city">{{ reservation.trajet.destination }}</div>
+                                    <div class="date">{{ reservation.trajet.dateArrivee|date('d/m/Y') }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-row">
+                                <div class="info-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>{{ reservation.trajet.conducteur.prenom }} {{ reservation.trajet.conducteur.nom }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-car"></i>
+                                    <span>{{ reservation.trajet.vehicule.marque }} {{ reservation.trajet.vehicule.modele }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-id-card"></i>
+                                    <span>{{ reservation.trajet.vehicule.immatriculation }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-chair"></i>
+                                    <span>{{ reservation.nbPlaces }} place(s) réservée(s)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-right">
+                            <div class="price">
+                                <div class="amount">{{ reservation.prixTotal }} DT</div>
+                                <div class="per-person">({{ reservation.trajet.prix }} DT/personne)</div>
+                            </div>
+                            <div class="places-info">
+                                <i class="fas fa-chair"></i> {{ reservation.trajet.placesDisponibles }} places restantes
+                            </div>
+                            {% if reservation.statut == 'CONFIRMEE' and reservation.trajet.dateDepart > date() %}
+                                <a href="{{ path('reservation_cancel', {'id': reservation.id}) }}" class="btn-cancel" onclick="return confirm('Annuler cette réservation ?')">
+                                    <i class="fas fa-times"></i> Annuler la réservation
+                                </a>
+                            {% endif %}
+                            <a href="{{ path('trajet_show', {'id': reservation.trajet.id}) }}" class="btn-view">
+                                <i class="fas fa-eye"></i> Voir les détails
+                            </a>
+                            
+                            {# Bouton pour laisser un avis #}
+                            {% if reservation.statut == 'CONFIRMEE' and reservation.trajet.dateDepart < date() %}
+                                {% if aDonneAvis %}
+                                    <span class="avis-badge">
+                                        <i class="fas fa-star"></i> Avis donné
+                                    </span>
+                                {% else %}
+                                    <a href="{{ path('avis_new', {'id': reservation.trajet.id}) }}" class="btn-avis">
+                                        <i class="fas fa-star"></i> Laisser un avis
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-times"></i>
+                <h3>Aucune réservation</h3>
+                <p>Vous n'avez pas encore effectué de réservation.</p>
+                <a href="{{ path('trajet_search') }}" class="btn-primary">
+                    <i class="fas fa-search"></i> Rechercher un trajet
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Filtrage par statut
+    const statusFilter = document.getElementById('statusFilter');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const cards = document.querySelectorAll('.reservation-card');
+    
+    function filterReservations() {
+        const status = statusFilter.value;
+        const searchTerm = searchInput.value.toLowerCase();
+        
+        cards.forEach(card => {
+            const cardStatus = card.dataset.status;
+            const cardCity = card.dataset.city.toLowerCase();
+            
+            let showByStatus = status === 'all' || cardStatus === status;
+            let showBySearch = searchTerm === '' || cardCity.includes(searchTerm);
+            
+            if (showByStatus && showBySearch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    
+    statusFilter.addEventListener('change', filterReservations);
+    searchBtn.addEventListener('click', filterReservations);
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') filterReservations();
+    });
+    
+    // Animation d'entrée
+    const cardsElements = document.querySelectorAll('.reservation-card');
+    cardsElements.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+</script>
+{% endblock %}

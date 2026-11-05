@@ -1,0 +1,689 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Wassalni Conducteur{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* ===== VARIABLES ===== */
+    :root {
+        --primary: #4c1d95;
+        --primary-light: #7c3aed;
+        --primary-dark: #2e1065;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --gray: #64748b;
+    }
+    
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+    }
+    
+    /* ===== HEADER SECTION ===== */
+    .dashboard-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 80px 0 100px;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+    }
+    
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(255,255,255,0.05)' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E") repeat-x bottom;
+        background-size: cover;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .dashboard-hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff, #c4b5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        letter-spacing: -1px;
+    }
+    
+    .dashboard-hero p {
+        text-align: center;
+        font-size: 18px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* ===== CONTAINER ===== */
+    .dashboard-container {
+        max-width: 1400px;
+        margin: -50px auto 0;
+        padding: 0 30px;
+        position: relative;
+        z-index: 3;
+    }
+    
+    /* ===== NAVIGATION CONDUCTEUR ===== */
+    .nav-conducteur {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 60px;
+        padding: 8px 24px;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .nav-links-conducteur {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .nav-links-conducteur a {
+        padding: 12px 24px;
+        color: #475569;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 40px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .nav-links-conducteur a i {
+            font-size: 16px;
+    }
+    
+    .nav-links-conducteur a:hover {
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        color: #4c1d95;
+        transform: translateY(-2px);
+    }
+    
+    .nav-links-conducteur a.active {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(76, 29, 149, 0.3);
+    }
+    
+    .user-welcome {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        padding: 8px 20px;
+        border-radius: 40px;
+    }
+    
+    .user-welcome i {
+        font-size: 20px;
+        color: #4c1d95;
+    }
+    
+    .user-welcome span {
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    /* ===== STATISTIQUES ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+        margin-bottom: 45px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 28px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #4c1d95, #7c3aed, #c4b5fd);
+        transform: scaleX(0);
+        transition: transform 0.3s;
+    }
+    
+    .stat-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .stat-card:hover {
+            transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        width: 65px;
+        height: 65px;
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .stat-card:hover .stat-icon {
+        animation: pulse 0.5s ease;
+    }
+    
+    .stat-icon i {
+        font-size: 32px;
+        color: #4c1d95;
+    }
+    
+    .stat-info h3 {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1;
+    }
+    
+    .stat-info p {
+        font-size: 14px;
+        color: #64748b;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    
+    /* ===== SECTION TITRE ===== */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    
+    .section-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-header h2 i {
+        color: #4c1d95;
+        font-size: 24px;
+    }
+    
+    .section-header a {
+        color: #4c1d95;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+    
+    .section-header a:hover {
+        transform: translateX(5px);
+        color: #7c3aed;
+    }
+    
+    /* ===== CARTES TRAJETS ===== */
+    .trajets-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-bottom: 45px;
+    }
+    
+    .trajet-card {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .trajet-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .trajet-route {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .trajet-route .city {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    
+    .trajet-route i {
+        color: #4c1d95;
+        font-size: 20px;
+    }
+    
+    .trajet-details {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 15px 0;
+        border-top: 2px solid #f1f5f9;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .trajet-details span {
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .trajet-details i {
+        color: #4c1d95;
+    }
+    
+    .trajet-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .trajet-price {
+        font-size: 24px;
+        font-weight: 800;
+        color: #10b981;
+    }
+    
+    .trajet-price small {
+        font-size: 12px;
+        font-weight: normal;
+    }
+    
+    .badge {
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    
+    .badge-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    
+    .badge-info {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+    
+    /* ===== DEMANDES ===== */
+    .demandes-list {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .demande-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.3s;
+        animation: fadeInLeft 0.5s ease-out;
+    }
+    
+    .demande-item:last-child {
+        border-bottom: none;
+    }
+    
+    .demande-item:hover {
+        background: #f8fafc;
+        padding-left: 35px;
+    }
+    
+    .demande-info h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 8px 0;
+    }
+    
+    .demande-info p {
+        font-size: 13px;
+        color: #64748b;
+        margin: 0;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .demande-info i {
+        margin-right: 5px;
+        color: #4c1d95;
+    }
+    
+    .demande-action {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .phone-number {
+        font-size: 15px;
+        font-weight: 600;
+        color: #4c1d95;
+        background: #f3e8ff;
+        padding: 8px 16px;
+        border-radius: 30px;
+    }
+    
+    .btn-call {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-call:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 24px;
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .empty-state i {
+        font-size: 64px;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 20px;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 25px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 40px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(76, 29, 149, 0.3);
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+        .stats-grid {
+            gap: 15px;
+        }
+        .stat-info h3 {
+            font-size: 28px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 0 20px;
+        }
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .trajets-grid {
+            grid-template-columns: 1fr;
+        }
+        .nav-conducteur {
+            flex-direction: column;
+            border-radius: 30px;
+            padding: 15px 20px;
+        }
+        .demande-item {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+        .demande-info p {
+            justify-content: center;
+        }
+        .dashboard-hero h1 {
+            font-size: 32px;
+        }
+    }
+     #hh{
+        color: #FFFFFF;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero">
+    <div class="container">
+        <h1>Tableau de bord conducteur</h1>
+        <p id="hh">Bienvenue {{ app.user.prenom }} ! Gérez vos trajets, véhicules et réservations</p>
+    </div>
+</div>
+
+<div class="dashboard-container">
+   
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-route"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalTrajets|default(0) }}</h3>
+                <p>Trajets publiés</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-car"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalVehicules|default(0) }}</h3>
+                <p>Véhicules</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalReservations|default(0) }}</h3>
+                <p>Passagers transportés</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.trajetsActifs|default(0) }}</h3>
+                <p>Trajets actifs</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Mes trajets récents -->
+    <div class="section-header">
+        <h2><i class="fas fa-clock"></i> Trajets récents</h2>
+        <a href="{{ path('conducteur_mes_trajets') }}">Voir tous <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="trajets-grid">
+        {% for trajet in derniersTrajets %}
+            <div class="trajet-card">
+                <div class="trajet-route">
+                    <span class="city">{{ trajet.villeDepart }}</span>
+                    <i class="fas fa-arrow-right"></i>
+                    <span class="city">{{ trajet.destination }}</span>
+                </div>
+                <div class="trajet-details">
+                    <span><i class="fas fa-calendar"></i> {{ trajet.dateDepart|date('d/m/Y') }}</span>
+                    <span><i class="fas fa-clock"></i> {{ trajet.dateDepart|date('H:i') }}</span>
+                    <span><i class="fas fa-chair"></i> {{ trajet.placesDisponibles }} places</span>
+                </div>
+                <div class="trajet-footer">
+                    <div class="trajet-price">{{ trajet.prix }} <small>DT/pers</small></div>
+                    {% if trajet.statut == 'VALIDE' %}
+                        <span class="badge badge-success"><i class="fas fa-check-circle"></i> Validé</span>
+                    {% elseif trajet.statut == 'EN_ATTENTE' %}
+                        <span class="badge badge-warning"><i class="fas fa-clock"></i> En attente</span>
+                    {% else %}
+                        <span class="badge badge-info"><i class="fas fa-flag-checkered"></i> Terminé</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state" style="grid-column: span 2;">
+                <i class="fas fa-route"></i>
+                <h3>Aucun trajet publié</h3>
+                <p>Commencez dès maintenant à proposer des trajets !</p>
+                <a href="{{ path('trajet_new') }}" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Publier un trajet
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Dernières demandes -->
+    <div class="section-header">
+        <h2><i class="fas fa-bell"></i> Demandes récentes</h2>
+        <a href="{{ path('conducteur_demandes') }}">Voir toutes <i class="fas fa-arrow-right"></i></a>
+    </div>
+    
+    <div class="demandes-list">
+        {% for demande in demandesRecentes %}
+            <div class="demande-item">
+                <div class="demande-info">
+                    <h4>{{ demande.passager.prenom }} {{ demande.passager.nom }}</h4>
+                    <p>
+                        <span><i class="fas fa-route"></i> {{ demande.trajet.villeDepart }} → {{ demande.trajet.destination }}</span>
+                        <span><i class="fas fa-chair"></i> {{ demande.nbPlaces }} place(s)</span>
+                        <span><i class="fas fa-tag"></i> {{ demande.prixTotal }} DT</span>
+                        <span><i class="fas fa-calendar"></i> {{ demande.dateReservation|date('d/m/Y') }}</span>
+                    </p>
+                </div>
+                <div class="demande-action">
+                    <span class="phone-number"><i class="fas fa-phone-alt"></i> {{ demande.passager.telephone }}</span>
+                    <a href="tel:{{ demande.passager.telephone }}" class="btn-call">
+                        <i class="fas fa-phone"></i> Appeler
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-bell-slash"></i>
+                <h3>Aucune demande</h3>
+                <p>Vous n'avez pas encore reçu de réservations.</p>
+                <a href="{{ path('trajet_new') }}" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Publier un trajet
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+   
+{% endblock %}

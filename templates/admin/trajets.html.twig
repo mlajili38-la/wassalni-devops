@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des trajets - Admin{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 50px 0 70px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .container-custom {
+        max-width: 1400px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        padding: 20px 25px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .stats-mini {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .stats-mini span {
+        background: rgba(255,255,255,0.2);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        padding: 20px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    th {
+        color: #64748b;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    
+    .btn-sm {
+        padding: 5px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 5px;
+        transition: all 0.3s;
+    }
+    
+    .btn-sm:hover {
+        transform: translateY(-1px);
+    }
+    
+    .btn-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .btn-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    @media (max-width: 768px) {
+        .card-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+        th, td {
+            font-size: 11px;
+            padding: 8px 6px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-route"></i> Gestion des trajets</h1>
+        <p>Consultez et gérez tous les trajets publiés</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list"></i> Liste des trajets</h3>
+            <div class="stats-mini">
+                <span><i class="fas fa-check-circle"></i> Validés: {{ trajets|filter(t => t.statut == 'VALIDE')|length }}</span>
+                <span><i class="fas fa-clock"></i> En attente: {{ trajets|filter(t => t.statut == 'EN_ATTENTE')|length }}</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Départ</th>
+                        <th>Destination</th>
+                        <th>Date départ</th>
+                        <th>Conducteur</th>
+                        <th>Places</th>
+                        <th>Prix</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trajet in trajets %}
+                        <tr>
+                            <td>{{ trajet.id }}</td>
+                            <td>{{ trajet.villeDepart }}</td>
+                            <td>{{ trajet.destination }}</td>
+                            <td>{{ trajet.dateDepart|date('d/m/Y H:i') }}</td>
+                            <td>{{ trajet.conducteur.prenom }} {{ trajet.conducteur.nom }}</td>
+                            <td>{{ trajet.placesDisponibles }}</td>
+                            <td>{{ trajet.prix }} DT</td>
+                            <td>
+                                {% if trajet.statut == 'VALIDE' %}
+                                    <span class="badge badge-success">Validé</span>
+                                {% else %}
+                                    <span class="badge badge-warning">En attente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if trajet.statut != 'VALIDE' %}
+                                    <a href="{{ path('admin_trajet_validate', {'id': trajet.id}) }}" class="btn-sm btn-success" onclick="return confirm('Valider ce trajet ?')">
+                                        <i class="fas fa-check"></i> Valider
+                                    </a>
+                                {% endif %}
+                                <a href="{{ path('admin_trajet_delete', {'id': trajet.id}) }}" class="btn-sm btn-danger" onclick="return confirm('Supprimer ce trajet ?')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

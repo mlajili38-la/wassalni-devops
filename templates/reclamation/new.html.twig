@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle réclamation - Wassalni{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 50px 0 70px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .container-custom {
+        max-width: 800px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+    }
+    
+    .form-card {
+        background: white;
+        border-radius: 32px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .form-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+    
+    .form-group label i {
+        margin-right: 8px;
+        color: #4c1d95;
+    }
+    
+    .form-group label .required {
+        color: #dc2626;
+        margin-left: 4px;
+    }
+    
+    .input-wrapper {
+        position: relative;
+    }
+    
+    .input-wrapper input,
+    .input-wrapper select,
+    .input-wrapper textarea {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s;
+        background: white;
+    }
+    
+    .input-wrapper select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234c1d95'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-size: 20px;
+    }
+    
+    .input-wrapper textarea {
+        resize: vertical;
+    }
+    
+    .input-wrapper input:focus,
+    .input-wrapper select:focus,
+    .input-wrapper textarea:focus {
+        outline: none;
+        border-color: #4c1d95;
+        box-shadow: 0 0 0 3px rgba(76, 29, 149, 0.1);
+    }
+    
+    .input-wrapper input.is-invalid,
+    .input-wrapper select.is-invalid,
+    .input-wrapper textarea.is-invalid {
+        border-color: #dc2626;
+    }
+    
+    .invalid-feedback {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+    
+    .btn-submit {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(76, 29, 149, 0.3);
+    }
+    
+    .info-note {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 20px;
+        margin-top: 30px;
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .info-note i {
+        font-size: 20px;
+        color: #4c1d95;
+    }
+    
+    .alert-danger {
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 15px 20px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        border-left: 4px solid #dc2626;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-file-alt"></i> Nouvelle réclamation</h1>
+        <p>Signalez un problème concernant un trajet ou un conducteur</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <div class="form-card">
+        <div class="form-title">
+            <i class="fas fa-exclamation-triangle" style="color: #f59e0b; margin-right: 10px;"></i>
+            Formulaire de réclamation
+        </div>
+        
+        {% for message in app.flashes('error') %}
+            <div class="alert-danger">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+        {% endfor %}
+        
+        {{ form_start(form, {'attr': {'id': 'reclamationForm'}}) }}
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> Sujet <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    {{ form_widget(form.sujet, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                {{ form_errors(form.sujet) }}
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-route"></i> Trajet concerné</label>
+                <div class="input-wrapper">
+                    {{ form_widget(form.trajetConcerne, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <small class="form-text text-muted" style="font-size: 12px; color: #64748b; margin-top: 5px; display: block;">
+                    Sélectionnez le trajet lié à votre problème (optionnel)
+                </small>
+                {{ form_errors(form.trajetConcerne) }}
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Conducteur concerné</label>
+                <div class="input-wrapper">
+                    {{ form_widget(form.utilisateurConcerne, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                <small class="form-text text-muted" style="font-size: 12px; color: #64748b; margin-top: 5px; display: block;">
+                    Sélectionnez le conducteur concerné (optionnel)
+                </small>
+                {{ form_errors(form.utilisateurConcerne) }}
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-comment"></i> Description <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    {{ form_widget(form.message, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+                </div>
+                {{ form_errors(form.message) }}
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Envoyer la réclamation
+            </button>
+        {{ form_end(form) }}
+        
+        <div class="info-note">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong>Note importante :</strong> Votre réclamation sera traitée par notre équipe dans les plus brefs délais. 
+                Vous serez notifié dès qu'une réponse sera apportée. Toute réclamation abusive pourra être rejetée.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validation côté client
+    const form = document.getElementById('reclamationForm');
+    const sujet = document.getElementById('reclamation_sujet');
+    const message = document.getElementById('reclamation_message');
+    
+    function validateField(field, errorMsg) {
+        if (!field.value.trim()) {
+            field.classList.add('is-invalid');
+            let errorDiv = field.parentElement.nextElementSibling;
+            if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+                errorDiv.textContent = errorMsg;
+                errorDiv.style.display = 'block';
+            } else {
+                const newError = document.createElement('div');
+                newError.className = 'invalid-feedback';
+                newError.textContent = errorMsg;
+                field.parentElement.after(newError);
+            }
+            return false;
+        } else {
+            field.classList.remove('is-invalid');
+            const errorDiv = field.parentElement.nextElementSibling;
+            if (errorDiv && errorDiv.classList.contains('invalid-feedback')) {
+                errorDiv.style.display = 'none';
+            }
+            return true;
+        }
+    }
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            if (!validateField(sujet, 'Veuillez sélectionner un sujet')) {
+                isValid = false;
+            }
+            
+            if (!validateField(message, 'Veuillez décrire votre problème')) {
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires.');
+            }
+        });
+    }
+</script>
+{% endblock %}

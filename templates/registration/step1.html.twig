@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Choisissez votre profil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 560px;
+            padding: 20px;
+        }
+        
+        .register-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .step-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 12px;
+        }
+        
+        .user-type-group {
+            margin-bottom: 40px;
+        }
+        
+        .user-type-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .user-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .user-option {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .user-option input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .user-option .option-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 24px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .user-option .check-mark {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-option .check-mark i {
+            font-size: 12px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .user-option input:checked + .option-card {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102,126,234,0.08) 0%, rgba(118,75,162,0.08) 100%);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.2);
+        }
+        
+        .user-option input:checked + .option-card .check-mark {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        
+        .user-option input:checked + .option-card .check-mark i {
+            opacity: 1;
+        }
+        
+        .user-option .option-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .user-option i.option-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-option .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .user-option .desc {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.5;
+        }
+        
+        .btn-next {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .btn-next.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .btn-next.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .login-link p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f5c6cb;
+        }
+        
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 32px 24px;
+            }
+            .user-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="header">
+                <h1>Wassalni</h1>
+                <p>Créez votre compte</p>
+                <span class="step-badge">Étape {{ step }}/{{ totalSteps }}</span>
+            </div>
+            
+            <!-- Affichage des erreurs -->
+            {% if errors is defined and errors|length > 0 %}
+                {% for error in errors %}
+                    <div class="alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form id="registerForm" method="post">
+                <div class="user-type-group">
+                    <label>Vous êtes :</label>
+                    <div class="user-options">
+                        <div class="user-option" data-type="conducteur">
+                            <input type="radio" 
+                                   name="user_type" 
+                                   value="conducteur"
+                                   id="user_type_conducteur"
+                                   {% if data.userType is defined and data.userType == 'conducteur' %}checked{% endif %}>
+                            <div class="option-card">
+                                <div class="check-mark">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <i class="fas fa-car-side option-icon"></i>
+                                <div class="title">Conducteur</div>
+                                <div class="desc">
+                                    Proposez des trajets<br>
+                                    et gagnez de l'argent
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="user-option" data-type="passager">
+                            <input type="radio" 
+                                   name="user_type" 
+                                   value="passager"
+                                   id="user_type_passager"
+                                   {% if data.userType is defined and data.userType == 'passager' %}checked{% endif %}>
+                            <div class="option-card">
+                                <div class="check-mark">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <i class="fas fa-user-friends option-icon"></i>
+                                <div class="title">Passager</div>
+                                <div class="desc">
+                                    Trouvez des trajets<br>
+                                    économisez sur vos déplacements
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                
+                <button type="submit" id="submitBtn" class="btn-next">
+                    Continuer <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            
+            <div class="login-link">
+                <p>
+                    Vous avez déjà un compte ?
+                    <a href="{{ path('app_login') }}">Connectez-vous</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sélection unique et activation automatique du bouton
+        const options = document.querySelectorAll('.user-option');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('registerForm');
+        
+        options.forEach(option => {
+            const radio = option.querySelector('input[type="radio"]');
+            const card = option.querySelector('.option-card');
+            
+            // Si déjà sélectionné, activer le bouton
+            if (radio.checked) {
+                submitBtn.classList.add('active');
+            }
+            
+            // Click sur la carte
+            card.addEventListener('click', (e) => {
+                if (e.target.type !== 'radio') {
+                    radio.checked = true;
+                    const changeEvent = new Event('change', { bubbles: true });
+                    radio.dispatchEvent(changeEvent);
+                }
+            });
+            
+            // Quand un radio est sélectionné
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    options.forEach(opt => {
+                        const otherRadio = opt.querySelector('input[type="radio"]');
+                        if (otherRadio !== radio) {
+                            otherRadio.checked = false;
+                        }
+                    });
+                    submitBtn.classList.add('active');
+                }
+            });
+        });
+        
+        // Soumettre le formulaire
+        submitBtn.addEventListener('click', (e) => {
+            if (!submitBtn.classList.contains('active')) {
+                e.preventDefault();
+                return;
+            }
+            
+            const selected = document.querySelector('input[name="user_type"]:checked');
+            if (!selected) {
+                e.preventDefault();
+                alert('Veuillez sélectionner un type de compte');
+            }
+        });
+    </script>
+</body>
+</html>

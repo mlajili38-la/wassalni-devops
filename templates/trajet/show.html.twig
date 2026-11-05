@@ -1,0 +1,334 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du trajet - Wassalni{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .container-custom {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 30px;
+        color: white;
+        text-align: center;
+    }
+    
+    .card-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .card-header p {
+        opacity: 0.9;
+    }
+    
+    .card-body {
+        padding: 30px;
+    }
+    
+    .journey-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 20px;
+    }
+    
+    .journey-point {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .journey-point .city {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    
+    .journey-point .date {
+        font-size: 14px;
+        color: #64748b;
+        margin-top: 8px;
+    }
+    
+    .journey-line {
+        color: #4c1d95;
+        font-size: 24px;
+        padding: 0 20px;
+    }
+    
+    .info-section {
+        margin-bottom: 30px;
+    }
+    
+    .info-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #eef2ff;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 16px;
+    }
+    
+    .info-item i {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+    }
+    
+    .info-item .label {
+        font-size: 12px;
+        color: #64748b;
+    }
+    
+    .info-item .value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .price-section {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .price-section .amount {
+        font-size: 48px;
+        font-weight: 800;
+        color: #15803d;
+    }
+    
+    .price-section .per-person {
+        font-size: 14px;
+        color: #166534;
+    }
+    
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-back:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(76, 29, 149, 0.3);
+    }
+    
+    .btn-reserve {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 32px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-reserve:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-reserve:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eef2ff;
+    }
+    
+    @media (max-width: 768px) {
+        .journey-details {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .journey-line {
+            transform: rotate(90deg);
+        }
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        .actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-custom">
+    <div class="card">
+        <div class="card-header">
+            <h1>Détails du trajet</h1>
+            <p>Résumez votre voyage en toute sécurité</p>
+        </div>
+        
+        <div class="card-body">
+            <!-- Trajet -->
+            <div class="journey-details">
+                <div class="journey-point">
+                    <div class="city">{{ trajet.villeDepart }}</div>
+                    <div class="date">{{ trajet.dateDepart|date('d/m/Y H:i') }}</div>
+                </div>
+                <div class="journey-line">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="journey-point">
+                    <div class="city">{{ trajet.destination }}</div>
+                    <div class="date">{{ trajet.dateArrivee|date('d/m/Y H:i') }}</div>
+                </div>
+            </div>
+            
+            <!-- Informations conducteur -->
+            <div class="info-section">
+                <div class="info-title">
+                    <i class="fas fa-user"></i> Conducteur
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-user-circle"></i>
+                        <div>
+                            <div class="label">{{ trajet.conducteur.prenom }} {{ trajet.conducteur.nom }}</div>
+                            <div class="value">Chauffeur</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-star"></i>
+                        <div>
+                            <div class="label">Note</div>
+                            <div class="value">4.9 ★</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informations véhicule -->
+            <div class="info-section">
+                <div class="info-title">
+                    <i class="fas fa-car"></i> Véhicule
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <i class="fas fa-car-side"></i>
+                        <div>
+                            <div class="label">Marque / Modèle</div>
+                            <div class="value">{{ trajet.vehicule.marque }} {{ trajet.vehicule.modele }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-id-card"></i>
+                        <div>
+                            <div class="label">Immatriculation</div>
+                            <div class="value">{{ trajet.vehicule.immatriculation }}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-chair"></i>
+                        <div>
+                            <div class="label">Places disponibles</div>
+                            <div class="value">{{ trajet.placesDisponibles }} places</div>
+                        </div>
+                    </div>
+                    {% if trajet.vehicule.couleur %}
+                    <div class="info-item">
+                        <i class="fas fa-palette"></i>
+                        <div>
+                            <div class="label">Couleur</div>
+                            <div class="value">{{ trajet.vehicule.couleur }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Prix -->
+            <div class="price-section">
+                <div class="amount">{{ trajet.prix }} DT</div>
+                <div class="per-person">par personne</div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions">
+                <a href="{{ path('trajet_search') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Retour à la recherche
+                </a>
+                
+                {% if trajet.placesDisponibles > 0 and is_granted('ROLE_PASSAGER') %}
+                    <form action="{{ path('reservation_new', {'id': trajet.id}) }}" method="post">
+                        <input type="hidden" name="nbPlaces" value="1">
+                        <button type="submit" class="btn-reserve">
+                            <i class="fas fa-check"></i> Réserver
+                        </button>
+                    </form>
+                {% elseif trajet.placesDisponibles > 0 %}
+                    <a href="{{ path('app_login') }}" class="btn-reserve">
+                        <i class="fas fa-sign-in-alt"></i> Connectez-vous pour réserver
+                    </a>
+                {% else %}
+                    <button class="btn-reserve" disabled>
+                        <i class="fas fa-times"></i> Complet
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

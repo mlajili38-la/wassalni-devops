@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes véhicules{% endblock %}
+
+{% block body %}
+<div class="page-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%); padding: 50px 0 60px; text-align: center; color: white;">
+    <h1>Mes véhicules</h1>
+    <p>Gérez vos véhicules pour vos trajets</p>
+</div>
+
+<div class="container" style="max-width: 1000px; margin: -30px auto 0; padding: 0 20px;">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+        <a href="{{ path('vehicule_new') }}" class="btn-primary-custom" style="background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%); color: white; padding: 12px 28px; border-radius: 40px; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-plus-circle"></i> Ajouter un véhicule
+        </a>
+    </div>
+    
+    <div class="row">
+        {% for vehicule in vehicules %}
+            <div class="col-md-6" style="margin-bottom: 20px;">
+                <div class="card" style="background: white; border-radius: 20px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-car-side" style="font-size: 36px; color: #4c1d95;"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0;">{{ vehicule.marque }} {{ vehicule.modele }}</h3>
+                            <p style="color: #64748b; margin: 5px 0;">
+                                <i class="fas fa-id-card"></i> {{ vehicule.immatriculation }} |
+                                <i class="fas fa-chair"></i> {{ vehicule.nbPlaces }} places |
+                                {% if vehicule.couleur %}<i class="fas fa-palette"></i> {{ vehicule.couleur }}{% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <a href="{{ path('vehicule_edit', {'id': vehicule.id}) }}" class="btn-outline-primary" style="padding: 8px 16px; margin-right: 10px;">Modifier</a>
+                            <form action="{{ path('vehicule_delete', {'id': vehicule.id}) }}" method="post" style="display: inline;" onsubmit="return confirm('Supprimer ce véhicule ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vehicule.id) }}">
+                                <button type="submit" class="btn-outline-danger" style="background: transparent; border: 2px solid #dc2626; color: #dc2626; padding: 6px 14px; border-radius: 12px; cursor: pointer;">Supprimer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="card" style="text-align: center; padding: 60px; background: white; border-radius: 20px;">
+                    <i class="fas fa-car" style="font-size: 48px; color: #cbd5e1;"></i>
+                    <h3 style="margin-top: 20px;">Aucun véhicule</h3>
+                    <p>Ajoutez un véhicule pour pouvoir publier des trajets.</p>
+                    <a href="{{ path('vehicule_new') }}" class="btn-primary-custom" style="margin-top: 20px;">Ajouter un véhicule</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

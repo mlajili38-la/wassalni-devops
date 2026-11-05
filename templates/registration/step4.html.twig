@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Véhicule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 560px;
+            padding: 20px;
+        }
+        
+        .register-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .step-badge {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 12px;
+        }
+        
+        .vehicle-icon {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .vehicle-icon i {
+            font-size: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+            font-size: 18px;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            border: 1.5px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-wrapper input::placeholder {
+            color: #adb5bd;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .btn-prev {
+            flex: 1;
+            padding: 14px;
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1.5;
+        }
+        
+        .btn-prev:hover {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        
+        .btn-next {
+            flex: 2;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .login-link p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .register-card {
+                padding: 32px 24px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="header">
+                <h1>Wassalni</h1>
+                <p>Créez votre compte</p>
+                <span class="step-badge">Étape 4/5</span>
+            </div>
+            
+            <div class="vehicle-icon">
+                <i class="fas fa-car"></i>
+            </div>
+            
+            <form method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Marque</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-car"></i>
+                            <input type="text" 
+                                   name="marque" 
+                                   value="{{ data.marque|default('') }}"
+                                   placeholder="Renault, Peugeot, BMW..." 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Modèle</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-car-side"></i>
+                            <input type="text" 
+                                   name="modele" 
+                                   value="{{ data.modele|default('') }}"
+                                   placeholder="Clio, 208, Série 3..." 
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Immatriculation</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card"></i>
+                            <input type="text" 
+                                   name="immatriculation" 
+                                   value="{{ data.immatriculation|default('') }}"
+                                   placeholder="123 TUN 456" 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nombre de places</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-chair"></i>
+                            <input type="number" 
+                                   name="nbPlaces" 
+                                   value="{{ data.nbPlaces|default('') }}"
+                                   placeholder="4" 
+                                   min="1" 
+                                   max="9" 
+                                   required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Couleur (optionnel)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-palette"></i>
+                        <input type="text" 
+                               name="couleur" 
+                               value="{{ data.couleur|default('') }}"
+                               placeholder="Rouge, Bleu, Noir...">
+                    </div>
+                </div>
+                
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                
+                <div class="btn-group">
+                    <a href="{{ path('app_register_wizard', {'step': 3}) }}" class="btn-prev">
+                        ← Précédent
+                    </a>
+                    <button type="submit" class="btn-next">
+                        Créer mon compte →
+                    </button>
+                </div>
+            </form>
+            
+            <div class="login-link">
+                <p>
+                    Vous avez déjà un compte ?
+                    <a href="{{ path('app_login') }}">Connectez-vous</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

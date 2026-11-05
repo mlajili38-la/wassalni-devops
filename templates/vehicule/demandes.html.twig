@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demandes de réservation{% endblock %}
+
+{% block body %}
+<div class="page-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%); padding: 50px 0 60px; text-align: center; color: white;">
+    <h1>Demandes de réservation</h1>
+    <p>Liste des passagers ayant réservé vos trajets</p>
+</div>
+
+<div class="container" style="max-width: 1000px; margin: -30px auto 0; padding: 0 20px;">
+    <div class="card" style="background: white; border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        {% if demandes|length > 0 %}
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>Passager</th>
+                        <th>Trajet</th>
+                        <th>Places</th>
+                        <th>Prix total</th>
+                        <th>Date réservation</th>
+                        <th>Contact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for demande in demandes %}
+                        <tr style="border-bottom: 1px solid #eef2ff;">
+                            <td style="padding: 15px;">
+                                <strong>{{ demande.passager.prenom }} {{ demande.passager.nom }}</strong>
+                            </td>
+                            <td style="padding: 15px;">{{ demande.trajet.villeDepart }} → {{ demande.trajet.destination }}</td>
+                            <td style="padding: 15px;">{{ demande.nbPlaces }}</td>
+                            <td style="padding: 15px;"><strong>{{ demande.prixTotal }} DT</strong></td>
+                            <td style="padding: 15px;">{{ demande.dateReservation|date('d/m/Y') }}</td>
+                            <td style="padding: 15px;">
+                                <a href="tel:{{ demande.passager.telephone }}" class="btn-outline-primary" style="padding: 6px 12px;">📞 Appeler</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="text-align: center; padding: 50px;">
+                <i class="fas fa-bell-slash" style="font-size: 48px; color: #cbd5e1;"></i>
+                <h3>Aucune demande</h3>
+                <p>Vous n'avez pas encore de demandes de réservation.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un véhicule{% endblock %}
+
+{% block body %}
+<div class="page-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%); padding: 50px 0 60px; text-align: center; color: white;">
+    <h1>Ajouter un véhicule</h1>
+    <p>Ajoutez votre véhicule pour publier des trajets</p>
+</div>
+
+<div class="container" style="max-width: 600px; margin: -30px auto 0; padding: 0 20px;">
+    <div class="card" style="background: white; border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+        {{ form_start(form) }}
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form_label(form.marque, 'Marque', {'label_attr': {'style': 'font-weight: 600; margin-bottom: 8px; display: block;'}}) }}
+                {{ form_widget(form.marque, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;'}}) }}
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form_label(form.modele, 'Modèle', {'label_attr': {'style': 'font-weight: 600; margin-bottom: 8px; display: block;'}}) }}
+                {{ form_widget(form.modele, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;'}}) }}
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form_label(form.immatriculation, 'Immatriculation', {'label_attr': {'style': 'font-weight: 600; margin-bottom: 8px; display: block;'}}) }}
+                {{ form_widget(form.immatriculation, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;'}}) }}
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form_label(form.nbPlaces, 'Nombre de places', {'label_attr': {'style': 'font-weight: 600; margin-bottom: 8px; display: block;'}}) }}
+                {{ form_widget(form.nbPlaces, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;'}}) }}
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                {{ form_label(form.couleur, 'Couleur (optionnel)', {'label_attr': {'style': 'font-weight: 600; margin-bottom: 8px; display: block;'}}) }}
+                {{ form_widget(form.couleur, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px;'}}) }}
+            </div>
+            <button type="submit" class="btn-primary-custom" style="width: 100%; padding: 14px; border-radius: 30px;">Ajouter le véhicule</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

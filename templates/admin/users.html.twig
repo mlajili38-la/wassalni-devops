@@ -1,0 +1,246 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs - Admin{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 50px 0 70px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .container-custom {
+        max-width: 1400px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        padding: 20px 25px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .stats-mini {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .stats-mini span {
+        background: rgba(255,255,255,0.2);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        padding: 20px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    th, td {
+        padding: 14px 12px;
+        text-align: left;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    th {
+        color: #64748b;
+        font-weight: 600;
+        font-size: 13px;
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .badge-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .badge-info {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+    
+    .badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    
+    .btn-sm {
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 5px;
+        transition: all 0.3s;
+    }
+    
+    .btn-sm:last-child {
+        margin-right: 0;
+    }
+    
+    .btn-sm:hover {
+        transform: translateY(-1px);
+    }
+    
+    .btn-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .btn-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    
+    .btn-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    @media (max-width: 768px) {
+        .card-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+        th, td {
+            font-size: 12px;
+            padding: 10px 8px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-users"></i> Gestion des utilisateurs</h1>
+        <p>Consultez et gérez tous les utilisateurs de la plateforme</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list"></i> Liste des utilisateurs</h3>
+            <div class="stats-mini">
+                <span><i class="fas fa-users"></i> Total: {{ users|length }}</span>
+                <span><i class="fas fa-user-tie"></i> Conducteurs: {{ users|filter(u => 'ROLE_CONDUCTEUR' in u.roles)|length }}</span>
+                <span><i class="fas fa-user-friends"></i> Passagers: {{ users|filter(u => 'ROLE_PASSAGER' in u.roles)|length }}</span>
+            </div>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Téléphone</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Vérifié</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.nom }}</td>
+                            <td>{{ user.prenom }}</td>
+                            <td>{{ user.telephone }}</td>
+                            <td>
+                                {% if 'ROLE_ADMIN' in user.roles %}
+                                    <span class="badge badge-info">Admin</span>
+                                {% elseif 'ROLE_CONDUCTEUR' in user.roles %}
+                                    <span class="badge badge-success">Conducteur</span>
+                                {% else %}
+                                    <span class="badge badge-info">Passager</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.statut == 'ACTIF' %}
+                                    <span class="badge badge-success">Actif</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Bloqué</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isVerified %}
+                                    <span class="badge badge-success">✓ Oui</span>
+                                {% else %}
+                                    <span class="badge badge-danger">✗ Non</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.statut == 'ACTIF' %}
+                                    <a href="{{ path('admin_user_block', {'id': user.id}) }}" class="btn-sm btn-warning" onclick="return confirm('Bloquer cet utilisateur ?')">
+                                        <i class="fas fa-ban"></i> Bloquer
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('admin_user_activate', {'id': user.id}) }}" class="btn-sm btn-success" onclick="return confirm('Activer cet utilisateur ?')">
+                                        <i class="fas fa-check"></i> Activer
+                                    </a>
+                                {% endif %}
+                                <a href="{{ path('admin_user_delete', {'id': user.id}) }}" class="btn-sm btn-danger" onclick="return confirm('Supprimer définitivement cet utilisateur ?')">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des réclamations - Admin{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 50px 0 70px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 36px;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+    
+    .container-custom {
+        max-width: 1200px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        padding: 20px 25px;
+        color: white;
+    }
+    
+    .card-header h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .reclamation-card {
+        padding: 25px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    
+    .reclamation-card:last-child {
+        border-bottom: none;
+    }
+    
+    .reclamation-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .reclamation-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    
+    .badge-warning {
+        background: #fef3c7;
+        color: #b45309;
+    }
+    
+    .badge-info {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+    
+    .badge-success {
+        background: #dcfce7;
+        color: #15803d;
+    }
+    
+    .reclamation-meta {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 15px;
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .reclamation-message {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .response-form {
+        margin-top: 20px;
+    }
+    
+    .response-form textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: inherit;
+        margin-bottom: 10px;
+        resize: vertical;
+    }
+    
+    .response-form textarea:focus {
+        outline: none;
+        border-color: #4c1d95;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 30px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 29, 149, 0.3);
+    }
+    
+    .response-display {
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 16px;
+        margin-top: 15px;
+    }
+    
+    .response-display strong {
+        color: #4c1d95;
+    }
+    
+    @media (max-width: 768px) {
+        .reclamation-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-file-alt"></i> Gestion des réclamations</h1>
+        <p>Consultez et traitez les réclamations des utilisateurs</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-list"></i> Liste des réclamations</h3>
+        </div>
+        
+        {% if reclamations|length > 0 %}
+            {% for reclamation in reclamations %}
+                <div class="reclamation-card">
+                    <div class="reclamation-header">
+                        <div class="reclamation-title">
+                            {{ reclamation.sujet }}
+                        </div>
+                        <div>
+                            {% if reclamation.statut == 'EN_ATTENTE' %}
+                                <span class="badge badge-warning">En attente</span>
+                            {% elseif reclamation.statut == 'EN_COURS' %}
+                                <span class="badge badge-info">En cours</span>
+                            {% else %}
+                                <span class="badge badge-success">Traitée</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="reclamation-meta">
+                        <span><i class="fas fa-user"></i> {{ reclamation.user.prenom }} {{ reclamation.user.nom }}</span>
+                        <span><i class="fas fa-envelope"></i> {{ reclamation.user.email }}</span>
+                        <span><i class="fas fa-calendar"></i> {{ reclamation.dateCreation|date('d/m/Y H:i') }}</span>
+                        {% if reclamation.trajetConcerne %}
+                            <span><i class="fas fa-route"></i> Trajet #{{ reclamation.trajetConcerne.id }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="reclamation-message">
+                        <strong>Message :</strong><br>
+                        {{ reclamation.message }}
+                    </div>
+                    
+                    {% if reclamation.statut == 'TRAITEE' and reclamation.reponse %}
+                        <div class="response-display">
+                            <strong><i class="fas fa-reply"></i> Réponse :</strong><br>
+                            {{ reclamation.reponse }}
+                            <br><br>
+                            <small>Date traitement: {{ reclamation.dateTraitement|date('d/m/Y H:i') }}</small>
+                        </div>
+                    {% else %}
+                        <form action="{{ path('admin_reclamation_process', {'id': reclamation.id}) }}" method="post" class="response-form">
+                            <textarea name="reponse" rows="3" placeholder="Votre réponse..."></textarea>
+                            <button type="submit" class="btn-submit">
+                                <i class="fas fa-paper-plane"></i> Répondre et traiter
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 60px;">
+                <i class="fas fa-check-circle" style="font-size: 64px; color: #10b981;"></i>
+                <h3 style="margin-top: 20px;">Aucune réclamation</h3>
+                <p>Il n'y a pas encore de réclamations des utilisateurs.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,216 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes avis - Conducteur{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 60px 0 80px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .page-header h1 {
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+    
+    .container-custom {
+        max-width: 1000px;
+        margin: -40px auto 0;
+        padding: 0 20px;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 24px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    
+    .note-moyenne {
+        font-size: 56px;
+        font-weight: 800;
+        color: #f59e0b;
+    }
+    
+    .stars {
+        font-size: 24px;
+        color: #f59e0b;
+        margin: 10px 0;
+    }
+    
+    .avis-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .avis-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .avis-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .passager-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .passager-info i {
+        font-size: 24px;
+        color: #4c1d95;
+    }
+    
+    .passager-name {
+        font-weight: 700;
+        color: #1e293b;
+    }
+    
+    .avis-note {
+        font-size: 18px;
+        color: #f59e0b;
+    }
+    
+    .avis-date {
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 15px;
+    }
+    
+    .avis-commentaire {
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 16px;
+        margin: 15px 0;
+        line-height: 1.6;
+        border-left: 3px solid #f59e0b;
+    }
+    
+    .avis-trajet {
+        font-size: 13px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 24px;
+    }
+    
+    .empty-state i {
+        font-size: 64px;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+    
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f1f5f9;
+        color: #475569;
+        padding: 10px 20px;
+        border-radius: 30px;
+        text-decoration: none;
+        margin-top: 20px;
+        transition: all 0.3s;
+    }
+    
+    .btn-back:hover {
+        background: #e2e8f0;
+        transform: translateX(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-star"></i> Mes avis</h1>
+        <p>Consultez les avis laissés par vos passagers</p>
+    </div>
+</div>
+
+<div class="container-custom">
+    <div class="stats-card">
+        <div class="note-moyenne">{{ noteMoyenne|default(0) }}</div>
+        <div class="stars">
+            {% for i in 1..5 %}
+                {% if i <= noteMoyenne|round %}
+                    <i class="fas fa-star"></i>
+                {% else %}
+                    <i class="far fa-star"></i>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="note-count">{{ nombreAvis|default(0) }} avis reçus</div>
+    </div>
+    
+    {% if avis|length > 0 %}
+        {% for a in avis %}
+            <div class="avis-card">
+                <div class="avis-header">
+                    <div class="passager-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="passager-name">{{ a.passager.prenom }} {{ a.passager.nom }}</span>
+                    </div>
+                    <div class="avis-note">
+                        {% for i in 1..5 %}
+                            {% if i <= a.note %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="avis-date">
+                    <i class="fas fa-calendar"></i> {{ a.dateCreation|date('d/m/Y H:i') }}
+                </div>
+                {% if a.commentaire %}
+                    <div class="avis-commentaire">
+                        <i class="fas fa-quote-left"></i> {{ a.commentaire }}
+                    </div>
+                {% endif %}
+                <div class="avis-trajet">
+                    <i class="fas fa-route"></i> Trajet : {{ a.trajet.villeDepart }} → {{ a.trajet.destination }}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fas fa-star"></i>
+            <h3>Aucun avis reçu</h3>
+            <p>Vous n'avez pas encore reçu d'avis de la part de vos passagers.</p>
+            <p>Les passagers pourront laisser un avis après avoir effectué un trajet avec vous.</p>
+        </div>
+    {% endif %}
+    
+    <div style="text-align: center;">
+        <a href="{{ path('conducteur_dashboard') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour au tableau de bord
+        </a>
+    </div>
+</div>
+{% endblock %}

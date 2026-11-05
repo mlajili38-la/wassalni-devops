@@ -1,0 +1,525 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - Administration Wassalni{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* ===== VARIABLES ===== */
+    :root {
+        --primary: #4c1d95;
+        --primary-light: #7c3aed;
+        --primary-dark: #2e1065;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --info: #3b82f6;
+        --dark: #1e293b;
+        --light: #f8fafc;
+        --gray: #64748b;
+    }
+    
+    /* ===== PAGE HEADER ===== */
+    .dashboard-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 80px 0 100px;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+    }
+    
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='rgba(255,255,255,0.05)' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z'%3E%3C/path%3E%3C/svg%3E") repeat-x bottom;
+        background-size: cover;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    
+    .dashboard-hero h1 {
+        font-size: 48px;
+        font-weight: 800;
+        margin-bottom: 15px;
+        background: linear-gradient(135deg, #fff, #c4b5fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+        letter-spacing: -1px;
+    }
+    
+    .dashboard-hero p {
+        text-align: center;
+        font-size: 18px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* ===== CONTAINER ===== */
+    .dashboard-container {
+        max-width: 1400px;
+        margin: -60px auto 0;
+        padding: 0 30px;
+        position: relative;
+        z-index: 3;
+    }
+    
+    /* ===== STATISTIQUES ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 28px;
+        padding: 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(0,0,0,0.03);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #4c1d95, #7c3aed, #c4b5fd);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+    }
+    
+    .stat-card:hover::after {
+        transform: scaleX(1);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+    }
+    
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+        transform: scale(1.05) rotate(5deg);
+    }
+    
+    .stat-icon i {
+        font-size: 34px;
+        color: #4c1d95;
+    }
+    
+    .stat-info h3 {
+        font-size: 36px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1;
+    }
+    
+    .stat-info p {
+        font-size: 14px;
+        color: #64748b;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    
+    /* ===== DOUBLE CARD GRID ===== */
+    .double-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    /* ===== CARD MODERNE ===== */
+    .modern-card {
+        background: white;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+    
+    .modern-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+    }
+    
+    .card-header-modern {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        padding: 20px 28px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-header-modern h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .card-header-modern i {
+        font-size: 22px;
+    }
+    
+    .badge-count {
+        background: rgba(255,255,255,0.2);
+        padding: 5px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    
+    .card-body-modern {
+        padding: 20px 0;
+    }
+    
+    /* ===== LISTE ITEMS ===== */
+    .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 28px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    
+    .list-item:hover {
+        background: #faf5ff;
+        padding-left: 35px;
+    }
+    
+    .list-item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .list-item-title {
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 15px;
+    }
+    
+    .list-item-subtitle {
+        font-size: 12px;
+        color: #64748b;
+        display: flex;
+        gap: 15px;
+    }
+    
+    .list-item-subtitle i {
+        margin-right: 4px;
+        color: #4c1d95;
+    }
+    
+    .list-item-value {
+        font-weight: 700;
+        color: #4c1d95;
+        background: #f3e8ff;
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+    }
+    
+    /* ===== ACTIONS RAPIDES ===== */
+    .actions-grid {
+        display: grid;
+        gap: 12px;
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 16px 24px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 20px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .action-btn:hover {
+        transform: translateX(8px);
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-color: #c4b5fd;
+    }
+    
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    
+    .action-btn:hover .action-icon {
+        transform: scale(1.05);
+    }
+    
+    .action-icon i {
+        font-size: 24px;
+        color: #4c1d95;
+    }
+    
+    .action-content {
+        flex: 1;
+    }
+    
+    .action-content h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 4px 0;
+    }
+    
+    .action-content p {
+        font-size: 12px;
+        color: #64748b;
+        margin: 0;
+    }
+    
+    .action-arrow {
+        color: #4c1d95;
+        font-size: 18px;
+        opacity: 0;
+        transition: all 0.3s;
+    }
+    
+    .action-btn:hover .action-arrow {
+        opacity: 1;
+        transform: translateX(5px);
+    }
+    
+    /* ===== STATS SUPPLEMENTAIRES ===== */
+    .stats-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+    
+    .stat-mini-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s;
+    }
+    
+    .stat-mini-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+    
+    .stat-mini-card i {
+        font-size: 32px;
+        color: #4c1d95;
+        margin-bottom: 10px;
+    }
+    
+    .stat-mini-card .number {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1e293b;
+    }
+    
+    .stat-mini-card .label {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 5px;
+    }
+    
+    /* ===== RESPONSIVE ===== */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stat-card, .modern-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    @media (max-width: 1024px) {
+        .stats-grid {
+            gap: 15px;
+        }
+        .stat-info h3 {
+            font-size: 28px;
+        }
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+        }
+        .stat-icon i {
+            font-size: 28px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 0 20px;
+        }
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .double-grid {
+            grid-template-columns: 1fr;
+        }
+        .stats-mini-grid {
+            grid-template-columns: 1fr;
+        }
+        .dashboard-hero h1 {
+            font-size: 32px;
+        }
+        .list-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+        .list-item-subtitle {
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero">
+    <div class="container">
+        <h1>Tableau de bord administrateur</h1>
+        <p>Bienvenue, {{ app.user.prenom }} ! Vue d'ensemble de la plateforme</p>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Statistiques principales -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalUsers|default(0) }}</h3>
+                <p>Utilisateurs total</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalConducteurs|default(0) }}</h3>
+                <p>Conducteurs</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalPassagers|default(0) }}</h3>
+                <p>Passagers</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-route"></i></div>
+            <div class="stat-info">
+                <h3>{{ stats.totalTrajets|default(0) }}</h3>
+                <p>Trajets total</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Statistiques secondaires -->
+    <div class="stats-mini-grid">
+        <div class="stat-mini-card">
+            <i class="fas fa-calendar-check"></i>
+            <div class="number">{{ stats.totalReservations|default(0) }}</div>
+            <div class="label">Réservations</div>
+        </div>
+        <div class="stat-mini-card">
+            <i class="fas fa-clock"></i>
+            <div class="number">{{ stats.trajetsEnAttente|default(0) }}</div>
+            <div class="label">Trajets en attente</div>
+        </div>
+        <div class="stat-mini-card">
+            <i class="fas fa-file-alt"></i>
+            <div class="number">{{ stats.reclamationsEnAttente|default(0) }}</div>
+            <div class="label">Réclamations</div>
+        </div>
+    </div>
+   
+    
+    <!-- Actions rapides -->
+    <div class="modern-card" style="margin-bottom: 40px;">
+        <div class="card-header-modern">
+            <h3><i class="fas fa-bolt"></i> Actions rapides</h3>
+            <span class="badge-count">Administration</span>
+        </div>
+        <div class="card-body-modern" style="padding: 20px 28px;">
+            <div class="actions-grid">
+                <a href="{{ path('admin_users') }}" class="action-btn">
+                    <div class="action-icon"><i class="fas fa-users"></i></div>
+                    <div class="action-content">
+                        <h4>Gérer les utilisateurs</h4>
+                        <p>Activer, bloquer ou supprimer des comptes</p>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                <a href="{{ path('admin_trajets') }}" class="action-btn">
+                    <div class="action-icon"><i class="fas fa-route"></i></div>
+                    <div class="action-content">
+                        <h4>Gérer les trajets</h4>
+                        <p>Valider ou supprimer des trajets</p>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+                <a href="{{ path('admin_reclamations') }}" class="action-btn">
+                    <div class="action-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="action-content">
+                        <h4>Gérer les réclamations</h4>
+                        <p>Répondre et traiter les réclamations</p>
+                    </div>
+                    <div class="action-arrow"><i class="fas fa-arrow-right"></i></div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

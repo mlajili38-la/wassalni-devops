@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes trajets - Conducteur{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
+        padding: 50px 0 60px 0;
+        text-align: center;
+        color: white;
+    }
+    
+    .container-custom {
+        max-width: 1200px;
+        margin: -30px auto 0;
+        padding: 0 20px;
+    }
+    
+    .action-buttons {
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%);
+        color: white;
+        padding: 12px 28px;
+        border-radius: 40px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(76, 29, 149, 0.3);
+        color: white;
+    }
+    
+    .trajet-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+    }
+    
+    .trajet-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <h1>Mes trajets</h1>
+    <p>Gérez tous vos trajets publiés</p>
+</div>
+
+<div class="container-custom">
+    <div class="action-buttons">
+        <a href="{{ path('trajet_new') }}" class="btn-primary-custom">
+            <i class="fas fa-plus-circle"></i> Publier un nouveau trajet
+        </a>
+    </div>
+    
+    {% for trajet in trajets %}
+        <div class="trajet-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <div>
+                    <h3 style="margin: 0;">{{ trajet.villeDepart }} → {{ trajet.destination }}</h3>
+                    <p style="color: #64748b; margin: 10px 0;">
+                        <i class="fas fa-calendar"></i> {{ trajet.dateDepart|date('d/m/Y H:i') }} |
+                        <i class="fas fa-chair"></i> {{ trajet.placesDisponibles }} places |
+                        <i class="fas fa-tag"></i> {{ trajet.prix }} DT/personne
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ path('trajet_show', {'id': trajet.id}) }}" class="btn-outline-primary" style="padding: 8px 16px;">Voir détails</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="trajet-card" style="text-align: center; padding: 50px;">
+            <i class="fas fa-route" style="font-size: 48px; color: #cbd5e1;"></i>
+            <h3 style="margin-top: 20px;">Aucun trajet publié</h3>
+            <p>Publiez votre premier trajet dès maintenant !</p>
+            <a href="{{ path('trajet_new') }}" class="btn-primary-custom" style="margin-top: 20px;">Publier un trajet</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

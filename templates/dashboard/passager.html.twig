@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - Passager{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Tableau de bord Passager</h1>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Mes réservations</h5>
+                    <h2>{{ stats.totalReservations }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Réservations actives</h5>
+                    <h2>{{ stats.reservationsActives }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Mes réservations</h4>
+            <a href="{{ path('trajet_search') }}" class="btn btn-primary float-end">+ Rechercher un trajet</a>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Trajet</th>
+                        <th>Conducteur</th>
+                        <th>Date</th>
+                        <th>Places</th>
+                        <th>Prix total</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td>{{ reservation.trajet.villeDepart }} → {{ reservation.trajet.destination }}</td>
+                            <td>{{ reservation.trajet.conducteur.prenom }} {{ reservation.trajet.conducteur.nom }}</td>
+                            <td>{{ reservation.trajet.dateDepart|date('d/m/Y H:i') }}</td>
+                            <td>{{ reservation.nbPlaces }}</td>
+                            <td>{{ reservation.prixTotal }} DT</td>
+                            <td>
+                                {% if reservation.statut == 'CONFIRMEE' %}
+                                    <span class="badge bg-success">Confirmée</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Annulée</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if reservation.statut == 'CONFIRMEE' and reservation.peutEtreAnnulee() %}
+                                    <a href="{{ path('reservation_cancel', {'id': reservation.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Annuler cette réservation ?')">Annuler</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucune réservation</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
