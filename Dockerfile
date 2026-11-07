@@ -30,8 +30,8 @@ RUN composer install \
 COPY . .
 
 RUN composer dump-autoload --classmap-authoritative --no-dev --no-scripts \
-    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app php bin/console importmap:install --env=prod \
-    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app php bin/console asset-map:compile --env=prod \
+    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app?serverVersion=16 php bin/console importmap:install --env=prod \
+    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app?serverVersion=16 php bin/console asset-map:compile --env=prod \
     && printf '%s\n' \
         '<VirtualHost *:80>' \
         '    DocumentRoot /var/www/html/public' \
