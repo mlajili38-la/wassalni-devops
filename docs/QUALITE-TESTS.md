@@ -60,6 +60,7 @@ En CI, la base est un service MySQL 8.0 jetable, créé pour le job puis détrui
   - `AvisController` : import `User` manquant → page `/avis/conducteur/{id}` ;
   - `Vehicule` : `Assert\Range(message: …)`, argument inexistant en Symfony 7 → `notInRangeMessage`.
 - Un **4e bug** du même type (`Assert\Length(message: …)` dans `User`) a été révélé par le test d'intégration de `/inscription`, puis corrigé.
+- Un **5e défaut** a été détecté par la CI (`doctrine:schema:validate`) : la relation `Trajet.vehicule` / `Vehicule.trajets` n'avait pas `inversedBy` côté `Trajet` (mapping invalide). Corrigé sans migration, car le schéma SQL ne change pas.
 - Les **58 erreurs restantes** sont gelées dans `phpstan-baseline.neon`. Ce sont surtout des écarts de typage
   entre les propriétés nullables des entités et les colonnes `NOT NULL` (45), et des appels sur `UserInterface`
   sans vérifier le type exact (`getUser()`). Elles ne bloquent pas le pipeline ; **toute nouvelle erreur le bloque**.
