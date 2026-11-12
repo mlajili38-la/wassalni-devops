@@ -89,3 +89,16 @@ Les 5 echecs Dependabot sont des montees de version MAJEURE (ex. Symfony 8, PHP 
 defauts detectes avant deploiement, aucune n'a ete fusionnee. Les echecs de branche (fix/docker-env-file,
 feat/qualite-tests : mapping Doctrine Trajet/Vehicule) ont ete corriges avant fusion.
 Taux d'echec des deploiements en test : 0/3 ; delai de restauration mesure (exercice) : 24 s.
+
+## 5. Exercice lance MANUELLEMENT sur main (workflow_dispatch), apres fusion
+Run https://github.com/mlajili38-la/wassalni-devops/actions/runs/43320780237 -> success
+| Version stable | `ghcr.io/mlajili38-la/wassalni-devops:c311d47f63e1a5b04c125f1e0f2600b9ef9cdc1c` |
+| Debut de l'incident | 22:33:07 UTC |
+| Detection | 22:33:13 UTC (MTTD : 6 s) par la sonde /health |
+| Diagnostic (logs) | 23 requetes /health en 503 ; log Monolog : `Application health check failed.` ; cause : `SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wassalni.table_inexistante_incident' doesn't exist` |
+| Retour a la normale | 22:33:38 UTC (rollback : 9 s ; MTTR depuis la detection : 25 s) |
+| Verification | /health 200, migrations a jour, smoke tests OK |
+| Mesures UP / DOWN | 18 / 22 |
+| Disponibilite sur la fenetre | 45.0 % |
+
+Note : 2 executions de cet exercice sur la PR #16 ont ete annulees (groupe de concurrence partage) ; corrige par la PR #18.

@@ -56,3 +56,15 @@ conteneurs : app healthy, database healthy (pret en 22s) | migrations : 4 execut
 2026-11-12T19:53:46Z  9bba2a8a25e3cf311f2cb9648fcd6e3e4477f6e9
 2026-11-12T19:48:57Z  b8efd787741027b4332e9a7a2f056f10a57581d9
 2026-11-07T23:02:13Z  6e1a212026b678d9d17751d27a75e10ea356cd41
+
+## 4. Deploiements AUTOMATIQUES apres CI verte sur main (workflow_run), apres fusion des PR #15 et #16
+Run https://github.com/mlajili38-la/wassalni-devops/actions/runs/43320221231 -> success
+Evenement workflow_run -> version a deployer : c311d47f63e1a5b04c125f1e0f2600b9ef9cdc1c
+revision : c311d47f63e1a5b04c125f1e0f2600b9ef9cdc1c
+SMOKE TESTS : OK
+DEPLOIEMENT OK : ghcr.io/mlajili38-la/wassalni-devops:c311d47f63e1a5b04c125f1e0f2600b9ef9cdc1c
+Run https://github.com/mlajili38-la/wassalni-devops/actions/runs/43320192215 -> success
+Evenement workflow_run -> version a deployer : 30ba83a4e8839d444412aee6453fb4625defb1ef
+revision : 30ba83a4e8839d444412aee6453fb4625defb1ef
+SMOKE TESTS : OK
+DEPLOIEMENT OK : ghcr.io/mlajili38-la/wassalni-devops:30ba83a4e8839d444412aee6453fb4625defb1ef
