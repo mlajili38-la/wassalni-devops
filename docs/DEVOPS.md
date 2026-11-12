@@ -46,25 +46,9 @@ Apache écrit ses journaux d'accès/erreur sur la sortie du conteneur. Les erreu
 
 ## Déploiement test et rollback
 
-Le job CI exécute le déploiement dans un Compose éphémère et lance un smoke test HTTP après que le health check du conteneur est vert. Cette preuve ne constitue pas un déploiement persistant sur un serveur externe.
-
-Sur un hôte de test disposant de Docker Compose, configurer `.env.docker` sans le committer et préciser l'image GHCR ainsi que sa version :
-
-```powershell
-$env:DOCKER_IMAGE = "ghcr.io/organisation/wassalni"
-$env:APP_VERSION = "SHA_DU_COMMIT"
-docker compose --env-file .env.docker pull app
-docker compose --env-file .env.docker up -d --no-build --wait app
-Invoke-WebRequest http://localhost:8080/health
-```
-
-Pour revenir à une version précédemment publiée, fournir son SHA (tag d'image immuable) :
-
-```powershell
-.\scripts\rollback.ps1 -Version SHA_STABLE
-```
-
-Le script récupère cette version de l'image, la redémarre, puis attend son health check. Vérifier ensuite `/health` et les journaux du service.
+- Déploiement automatisé de l'image GHCR en environnement de test, vérifications et trace de version : [`DEPLOIEMENT.md`](DEPLOIEMENT.md).
+- Journalisation, sondes de santé, indicateurs, diagnostic, procédure de rollback et fiche d'incident : [`SUPERVISION.md`](SUPERVISION.md).
+- Rollback : `scripts/rollback.sh <SHA>` (Linux / CI), `scripts/rollback.ps1 -Version <SHA>` (Windows), ou workflow *Incident drill and rollback*.
 
 ## Configuration et secrets
 

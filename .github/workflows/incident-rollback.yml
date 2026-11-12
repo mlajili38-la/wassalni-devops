@@ -1,0 +1,98 @@
+# Lot 7 - Exercice d'incident controle et rollback dans l'environnement de test.
+#
+# Scenario (scripts/incident-drill.sh) : deploiement de la version stable depuis GHCR -> supervision de /health
+# -> mise en service d'une version defectueuse (construite localement, jamais publiee) -> detection
+# -> diagnostic par les logs -> rollback vers la version stable GHCR -> verification -> indicateurs.
+#
+# Declencheurs : manuel (workflow_dispatch, version stable au choix) et PR modifiant les scripts d'exploitation.
+name: Incident drill and rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      stable_version:
+        description: "Tag GHCR de la version stable (SHA complet). Vide = version de l'image latest."
+        required: false
+        default: ""
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/incident-rollback.yml"
+      - "scripts/incident-drill.sh"
+      - "scripts/simulate-incident.sh"
+      - "scripts/rollback.sh"
+      - "scripts/monitor-health.sh"
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  drill:
+    name: Incident, diagnosis and rollback
+    runs-on: ubuntu-latest
+    env:
+      APP_SECRET: ${{ secrets.TEST_APP_SECRET }}
+      MYSQL_PASSWORD: ${{ secrets.TEST_MYSQL_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
+      COMPOSE_PROJECT_NAME: wassalni-test
+      APP_PORT: "8080"
+      DEPLOY_DIR: build/deploy
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+
+      - name: Resolve stable version (GHCR tag)
+        env:
+          INPUT_VERSION: ${{ inputs.stable_version }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "DOCKER_IMAGE=${image}" >> "$GITHUB_ENV"
+          if [ -n "${INPUT_VERSION}" ]; then
+            stable="${INPUT_VERSION}"
+          else
+            docker pull -q "${image}:latest"
+            stable=$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${image}:latest")
+          fi
+          echo "STABLE=${stable}" >> "$GITHUB_ENV"
+          echo "Version stable : ${image}:${stable}"
+
+      - name: Run incident drill (deploy, incident, detection, diagnosis, rollback)
+        run: scripts/incident-drill.sh "${STABLE}"
+
+      - name: Publish incident report in job summary
+        if: always()
+        run: |
+          if [ -f "${DEPLOY_DIR}/incident-report.md" ]; then
+            cat "${DEPLOY_DIR}/incident-report.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Exercice d'incident : ECHEC (voir les logs du job)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Collect container logs
+        if: always()
+        run: |
+          mkdir -p "${DEPLOY_DIR}"
+          export APP_VERSION="${STABLE:-local}"
+          docker compose -f compose.yaml ps -a > "${DEPLOY_DIR}/containers.txt" 2>&1 || true
+          docker compose -f compose.yaml logs --no-color --timestamps app > "${DEPLOY_DIR}/app-final.log" 2>&1 || true
+          docker compose -f compose.yaml logs --no-color --timestamps database > "${DEPLOY_DIR}/database.log" 2>&1 || true
+
+      - name: Archive incident report, monitoring data and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: incident-drill-${{ github.run_id }}
+          path: build/deploy/
+          if-no-files-found: ignore
+
+      - name: Tear down test environment
+        if: always()
+        run: APP_VERSION="${STABLE:-local}" docker compose -f compose.yaml down --volumes
