@@ -148,6 +148,12 @@ jobs:
     name: Build, deploy-test and publish image
     runs-on: ubuntu-latest
     needs: [quality, security]
+    # Publications GHCR dans l'ordre des commits : sans ce groupe, deux CI de main en parallele
+    # peuvent publier "latest" dans le desordre (constate : latest -> c311d47 alors que 30ba83a etait plus recent).
+    # Une execution en attente est remplacee par la plus recente : "latest" designe toujours le dernier commit.
+    concurrency:
+      group: publish-${{ github.ref }}
+      cancel-in-progress: false
     permissions:
       contents: read
       packages: write

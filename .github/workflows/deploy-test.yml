@@ -30,8 +30,10 @@ on:
       - "compose.yaml"
       - "docker/**"
 
+# Un groupe par version deployee : deux versions differentes ne s'annulent plus mutuellement
+# (GitHub annule une execution en attente quand une plus recente arrive dans le meme groupe).
 concurrency:
-  group: deploy-test
+  group: deploy-test-${{ github.event.workflow_run.head_sha || github.ref }}
   cancel-in-progress: false
 
 permissions:
