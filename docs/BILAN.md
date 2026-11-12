@@ -12,7 +12,7 @@
 | 6. Déploiement | déploiement automatique de l'image **GHCR** après chaque CI verte sur `main`, déclenchement manuel, vérification des conteneurs, des migrations, de `/health` et des smoke tests, trace de la version | `docs/DEPLOIEMENT.md`, `docs/preuves/lot6-deploiement.txt` |
 | 7. Supervision et rollback | logs collectés et documentés, sondes, indicateurs, incident contrôlé, diagnostic par les logs, rollback GHCR (MTTD 6 s, MTTR 24 s) | `docs/SUPERVISION.md`, `docs/preuves/lot7-*` |
 
-## 2. Défauts détectés par la chaîne avant tout déploiement
+## 2. Défauts détectés par la chaîne
 
 | # | Défaut | Détecté par | Correction |
 |---|---|---|---|
@@ -25,8 +25,8 @@
 | 8 | Secret de développement versionné (SEC-01) | Gitleaks | justifié, remédiation en cours |
 | 9 | 4 CVE CRITICAL (Apache) + 2 HIGH (zlib) dans l'image | Trivy | PR #5 : durcissement du Dockerfile |
 | 10 | 9 montées de version majeure proposées par Dependabot, dont 5 cassent la CI | CI | non fusionnées ; PR #17 : majeures ignorées |
-
-## 3. Difficultés rencontrées
+| 11 | Tag `latest` publié dans le désordre (`latest` → `c311d47`, plus ancien que `30ba83a`) quand deux CI de `main` tournent en parallèle | lecture des preuves de l'exercice d'incident | PR #18 : publication sérialisée par branche |
+ rencontrées
 
 | Difficulté | Cause | Solution |
 |---|---|---|
@@ -62,7 +62,7 @@
 | Durée moyenne d'exécution | CI ≈ 2 min 15 (moyenne), Deploy test ≈ 1 min, Incident drill ≈ 2 min 30 |
 | Fréquence | 19 PR (dont 9 Dependabot) ; un déploiement en test automatique par fusion sur `main` |
 | Couverture | 11,45 % des lignes, 25,8 % des méthodes |
-| Défauts détectés avant déploiement | 10 (tableau § 2) |
+| Défauts détectés | 11 (tableau § 2), dont 10 avant tout déploiement |
 | Vulnérabilités | Composer 60 → 0 ; image : 6 HIGH/CRITICAL corrigeables → 0 |
 | Échec des déploiements en test | 0 sur 9 exécutions de *Deploy test* (automatiques, manuelles et sur PR) |
 | Délai de restauration (exercice) | MTTD 6 s, MTTR 24 s |
