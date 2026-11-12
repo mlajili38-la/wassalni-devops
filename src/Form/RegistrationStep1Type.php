@@ -16,12 +16,12 @@ class RegistrationStep1Type extends AbstractType
                 'label' => 'Vous êtes :',
                 'choices' => [
                     'Conducteur' => 'conducteur',
-                    'Passager' => 'passager'
+                    'Passager' => 'passager',
                 ],
                 'expanded' => true,
                 'multiple' => false,
                 'mapped' => false,
-                'required' => true
+                'required' => true,
             ])
         ;
     }
@@ -29,7 +29,7 @@ class RegistrationStep1Type extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'csrf_protection' => false // Désactiver temporairement pour tester
+            'csrf_protection' => false, // Désactiver temporairement pour tester
         ]);
     }
 }

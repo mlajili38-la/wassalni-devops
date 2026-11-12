@@ -16,24 +16,24 @@ class VehiculeType extends AbstractType
         $builder
             ->add('marque', TextType::class, [
                 'label' => 'Marque',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Renault, Peugeot, BMW']
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Renault, Peugeot, BMW'],
             ])
             ->add('modele', TextType::class, [
                 'label' => 'Modèle',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Clio, 208, Série 3']
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Clio, 208, Série 3'],
             ])
             ->add('immatriculation', TextType::class, [
                 'label' => 'Immatriculation',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 123 TUN 456']
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: 123 TUN 456'],
             ])
             ->add('nbPlaces', NumberType::class, [
                 'label' => 'Nombre de places',
-                'attr' => ['class' => 'form-control', 'min' => 1, 'max' => 9]
+                'attr' => ['class' => 'form-control', 'min' => 1, 'max' => 9],
             ])
             ->add('couleur', TextType::class, [
                 'label' => 'Couleur',
                 'required' => false,
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Rouge, Bleu, Noir']
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Ex: Rouge, Bleu, Noir'],
             ])
         ;
     }

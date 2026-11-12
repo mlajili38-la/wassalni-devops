@@ -29,7 +29,7 @@ class ReservationService
             'statut' => 'CONFIRMEE',
         ]);
 
-        if ($reservationExistante !== null) {
+        if (null !== $reservationExistante) {
             throw new \DomainException('Vous avez déjà réservé ce trajet.');
         }
 
@@ -51,7 +51,7 @@ class ReservationService
      */
     public function annuler(Reservation $reservation): void
     {
-        if ($reservation->getStatut() !== 'CONFIRMEE') {
+        if ('CONFIRMEE' !== $reservation->getStatut()) {
             throw new \DomainException('Cette réservation est déjà annulée.');
         }
 

@@ -2,19 +2,13 @@
 
 namespace App\Security;
 
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
-use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
@@ -32,7 +26,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private CsrfTokenManagerInterface $csrfTokenManager,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -63,11 +57,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $user = $token->getUser();
-        
+
         // Vérifier si le compte est vérifié
         if (!$user->isVerified()) {
             $this->clearCsrfToken($request);
             $request->getSession()->getFlashBag()->add('error', 'Veuillez confirmer votre adresse email avant de vous connecter.');
+
             return new RedirectResponse($this->urlGenerator->generate('app_verify_waiting'));
         }
 
@@ -76,9 +71,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
         } elseif (in_array('ROLE_CONDUCTEUR', $user->getRoles())) {
             return new RedirectResponse($this->urlGenerator->generate('conducteur_dashboard'));
-        } else {
-            return new RedirectResponse($this->urlGenerator->generate('trajet_search'));
         }
+
+        return new RedirectResponse($this->urlGenerator->generate('trajet_search'));
     }
 
     protected function getLoginUrl(Request $request): string

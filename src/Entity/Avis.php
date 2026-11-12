@@ -15,16 +15,16 @@ class Avis
     private ?int $id = null;
 
     #[ORM\Column(type: 'integer')]
-    #[Assert\NotBlank(message: "Veuillez donner une note")]
+    #[Assert\NotBlank(message: 'Veuillez donner une note')]
     #[Assert\Range(
-        min: 1, 
-        max: 5, 
-        notInRangeMessage: "La note doit être comprise entre {{ min }} et {{ max }}"
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}'
     )]
     private ?int $note = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\Length(max: 500, maxMessage: "Le commentaire ne peut pas dépasser {{ limit }} caractères")]
+    #[Assert\Length(max: 500, maxMessage: 'Le commentaire ne peut pas dépasser {{ limit }} caractères')]
     private ?string $commentaire = null;
 
     #[ORM\Column(type: 'datetime')]
@@ -60,6 +60,7 @@ class Avis
     public function setNote(int $note): static
     {
         $this->note = $note;
+
         return $this;
     }
 
@@ -71,6 +72,7 @@ class Avis
     public function setCommentaire(?string $commentaire): static
     {
         $this->commentaire = $commentaire;
+
         return $this;
     }
 
@@ -82,6 +84,7 @@ class Avis
     public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
         return $this;
     }
 
@@ -93,6 +96,7 @@ class Avis
     public function setPassager(?User $passager): static
     {
         $this->passager = $passager;
+
         return $this;
     }
 
@@ -104,6 +108,7 @@ class Avis
     public function setConducteur(?User $conducteur): static
     {
         $this->conducteur = $conducteur;
+
         return $this;
     }
 
@@ -115,6 +120,7 @@ class Avis
     public function setTrajet(?Trajet $trajet): static
     {
         $this->trajet = $trajet;
+
         return $this;
     }
 }
