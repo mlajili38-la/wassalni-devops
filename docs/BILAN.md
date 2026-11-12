@@ -26,7 +26,8 @@
 | 9 | 4 CVE CRITICAL (Apache) + 2 HIGH (zlib) dans l'image | Trivy | PR #5 : durcissement du Dockerfile |
 | 10 | 9 montées de version majeure proposées par Dependabot, dont 5 cassent la CI | CI | non fusionnées ; PR #17 : majeures ignorées |
 | 11 | Tag `latest` publié dans le désordre (`latest` → `c311d47`, plus ancien que `30ba83a`) quand deux CI de `main` tournent en parallèle | lecture des preuves de l'exercice d'incident | PR #18 : publication sérialisée par branche |
- rencontrées
+
+## 3. Difficultés rencontrées
 
 | Difficulté | Cause | Solution |
 |---|---|---|
