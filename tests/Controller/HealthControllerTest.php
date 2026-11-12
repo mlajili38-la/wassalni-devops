@@ -17,9 +17,9 @@ class HealthControllerTest extends TestCase
         $connection->expects(self::once())
             ->method('executeQuery')
             ->with('SELECT 1')
-            ->willReturn($this->createMock(Result::class));
+            ->willReturn($this->createStub(Result::class));
 
-        $response = (new HealthController())($connection, $this->createMock(LoggerInterface::class));
+        $response = (new HealthController())($connection, $this->createStub(LoggerInterface::class));
 
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         self::assertSame('{"status":"ok"}', $response->getContent());

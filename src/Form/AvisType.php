@@ -36,7 +36,7 @@ class AvisType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 4,
-                    'placeholder' => 'Partagez votre expérience avec ce conducteur...'
+                    'placeholder' => 'Partagez votre expérience avec ce conducteur...',
                 ],
                 'constraints' => [new Length(['max' => 500, 'maxMessage' => 'Le commentaire ne peut pas dépasser 500 caractères'])],
             ])

@@ -39,18 +39,18 @@ class ReclamationType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 5,
-                    'placeholder' => 'Décrivez votre problème en détail...'
+                    'placeholder' => 'Décrivez votre problème en détail...',
                 ],
                 'constraints' => [
                     new NotBlank(['message' => 'Le message est obligatoire']),
-                    new Length(['min' => 10, 'minMessage' => 'Le message doit contenir au moins 10 caractères'])
+                    new Length(['min' => 10, 'minMessage' => 'Le message doit contenir au moins 10 caractères']),
                 ],
             ])
             ->add('trajetConcerne', EntityType::class, [
                 'label' => 'Trajet concerné',
                 'class' => Trajet::class,
                 'choices' => $options['trajets_disponibles'] ?? [],
-                'choice_label' => function(Trajet $trajet) {
+                'choice_label' => function (Trajet $trajet) {
                     return sprintf(
                         '%s → %s | %s | Conducteur: %s %s | Prix: %s DT',
                         $trajet->getVilleDepart(),
@@ -64,7 +64,7 @@ class ReclamationType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'style' => 'width: 100%;'
+                    'style' => 'width: 100%;',
                 ],
                 'placeholder' => '-- Sélectionnez un trajet --',
             ])
@@ -72,8 +72,8 @@ class ReclamationType extends AbstractType
                 'label' => 'Conducteur concerné (optionnel)',
                 'class' => User::class,
                 'choices' => $options['conducteurs_disponibles'] ?? [],
-                'choice_label' => function(User $user) {
-                    return $user->getPrenom() . ' ' . $user->getNom() . ' (' . $user->getEmail() . ')';
+                'choice_label' => function (User $user) {
+                    return $user->getPrenom().' '.$user->getNom().' ('.$user->getEmail().')';
                 },
                 'required' => false,
                 'attr' => ['class' => 'form-control'],

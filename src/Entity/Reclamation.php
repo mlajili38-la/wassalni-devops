@@ -15,13 +15,13 @@ class Reclamation
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "Le sujet est obligatoire")]
-    #[Assert\Length(min: 5, max: 100, minMessage: "Le sujet doit contenir au moins 5 caractères", maxMessage: "Le sujet ne peut pas dépasser 100 caractères")]
+    #[Assert\NotBlank(message: 'Le sujet est obligatoire')]
+    #[Assert\Length(min: 5, max: 100, minMessage: 'Le sujet doit contenir au moins 5 caractères', maxMessage: 'Le sujet ne peut pas dépasser 100 caractères')]
     private ?string $sujet = null;
 
     #[ORM\Column(type: 'text')]
-    #[Assert\NotBlank(message: "Le message est obligatoire")]
-    #[Assert\Length(min: 10, minMessage: "Le message doit contenir au moins 10 caractères")]
+    #[Assert\NotBlank(message: 'Le message est obligatoire')]
+    #[Assert\Length(min: 10, minMessage: 'Le message doit contenir au moins 10 caractères')]
     private ?string $message = null;
 
     #[ORM\Column(length: 20)]
@@ -64,6 +64,7 @@ class Reclamation
     public function setSujet(string $sujet): static
     {
         $this->sujet = $sujet;
+
         return $this;
     }
 
@@ -75,6 +76,7 @@ class Reclamation
     public function setMessage(string $message): static
     {
         $this->message = $message;
+
         return $this;
     }
 
@@ -86,11 +88,11 @@ class Reclamation
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-        
-        if ($statut === 'TRAITEE') {
+
+        if ('TRAITEE' === $statut) {
             $this->dateTraitement = new \DateTime();
         }
-        
+
         return $this;
     }
 
@@ -102,6 +104,7 @@ class Reclamation
     public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
         return $this;
     }
 
@@ -113,6 +116,7 @@ class Reclamation
     public function setDateTraitement(?\DateTimeInterface $dateTraitement): static
     {
         $this->dateTraitement = $dateTraitement;
+
         return $this;
     }
 
@@ -124,6 +128,7 @@ class Reclamation
     public function setReponse(?string $reponse): static
     {
         $this->reponse = $reponse;
+
         return $this;
     }
 
@@ -135,6 +140,7 @@ class Reclamation
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -146,6 +152,7 @@ class Reclamation
     public function setTrajetConcerne(?Trajet $trajetConcerne): static
     {
         $this->trajetConcerne = $trajetConcerne;
+
         return $this;
     }
 
@@ -157,6 +164,7 @@ class Reclamation
     public function setUtilisateurConcerne(?User $utilisateurConcerne): static
     {
         $this->utilisateurConcerne = $utilisateurConcerne;
+
         return $this;
     }
 }

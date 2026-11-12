@@ -7,7 +7,7 @@ WASSALNI est une application Symfony 7.4 / PHP 8.2+ avec MySQL 8.0 et PHPUnit. L
 Le workflow `.github/workflows/ci.yml` s'exécute sur les pushes et les pull requests ciblant `main`, `master` ou `develop` :
 
 1. Valide les fichiers Composer et installe les dépendances depuis `composer.lock`.
-2. Vérifie la syntaxe PHP, valide le conteneur Symfony, exécute `composer audit` et les tests PHPUnit. Le rapport JUnit est conservé comme artefact.
+2. Contrôles qualité bloquants : syntaxe PHP, style (PHP-CS-Fixer), analyse statique (PHPStan), conteneur Symfony, `composer audit`, migrations sur une base MySQL de test, tests unitaires et d'intégration PHPUnit avec couverture (seuil minimal). Rapports JUnit, testdox et couverture archivés comme artefact. Détails : [`QUALITE-TESTS.md`](QUALITE-TESTS.md).
 3. Construit l'image Docker identifiée par le SHA du commit, démarre l'application et MySQL 8.0 dans un environnement de test éphémère, puis vérifie `/health`, l'état des migrations Doctrine et les pages principales (smoke tests).
 4. Sur un push à la branche par défaut uniquement, publie l'image avec son SHA et le tag `latest` dans GitHub Container Registry (GHCR).
 
@@ -79,4 +79,4 @@ Ne pas placer de secret réel dans le dépôt, les journaux, les rapports ou les
 
 ## Limites et amélioration
 
-La publication GHCR requiert que le dépôt GitHub autorise `GITHUB_TOKEN` à publier des packages. Le déploiement CI est volontairement éphémère ; aucun hôte SSH ni secret d'infrastructure n'est présumé. L'image contient PHP 8.3, tandis que le projet accepte PHP 8.2 ou supérieur. La couverture, les tests d'intégration avec une base dédiée, la protection effective de `main` et le déploiement persistant sont à configurer/démontrer selon la plateforme et l'infrastructure disponibles.
+La publication GHCR requiert que le dépôt GitHub autorise `GITHUB_TOKEN` à publier des packages. Le déploiement CI est volontairement éphémère ; aucun hôte SSH ni secret d'infrastructure n'est présumé. L'image contient PHP 8.3, tandis que le projet accepte PHP 8.2 ou supérieur. La protection effective de `main` et le déploiement persistant sont à configurer/démontrer selon la plateforme et l'infrastructure disponibles.

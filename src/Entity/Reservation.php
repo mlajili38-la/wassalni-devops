@@ -18,9 +18,9 @@ class Reservation
     private ?\DateTimeInterface $dateReservation = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le nombre de places est obligatoire")]
-    #[Assert\Positive(message: "Le nombre de places doit être positif")]
-    #[Assert\LessThanOrEqual(propertyPath: "trajet.placesDisponibles", message: "Pas assez de places disponibles")]
+    #[Assert\NotBlank(message: 'Le nombre de places est obligatoire')]
+    #[Assert\Positive(message: 'Le nombre de places doit être positif')]
+    #[Assert\LessThanOrEqual(propertyPath: 'trajet.placesDisponibles', message: 'Pas assez de places disponibles')]
     private ?int $nbPlaces = null;
 
     #[ORM\Column(length: 20)]
@@ -58,6 +58,7 @@ class Reservation
     public function setDateReservation(\DateTimeInterface $dateReservation): static
     {
         $this->dateReservation = $dateReservation;
+
         return $this;
     }
 
@@ -70,6 +71,7 @@ class Reservation
     {
         $this->nbPlaces = $nbPlaces;
         $this->updatePrixTotal();
+
         return $this;
     }
 
@@ -81,11 +83,11 @@ class Reservation
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-        
-        if ($statut === 'ANNULEE') {
+
+        if ('ANNULEE' === $statut) {
             $this->dateAnnulation = new \DateTime();
         }
-        
+
         return $this;
     }
 
@@ -97,6 +99,7 @@ class Reservation
     public function setPrixTotal(?float $prixTotal): static
     {
         $this->prixTotal = $prixTotal;
+
         return $this;
     }
 
@@ -108,6 +111,7 @@ class Reservation
     public function setDateAnnulation(?\DateTimeInterface $dateAnnulation): static
     {
         $this->dateAnnulation = $dateAnnulation;
+
         return $this;
     }
 
@@ -119,6 +123,7 @@ class Reservation
     public function setPassager(?User $passager): static
     {
         $this->passager = $passager;
+
         return $this;
     }
 
@@ -131,6 +136,7 @@ class Reservation
     {
         $this->trajet = $trajet;
         $this->updatePrixTotal();
+
         return $this;
     }
 
@@ -143,15 +149,15 @@ class Reservation
 
     public function peutEtreAnnulee(): bool
     {
-        if ($this->statut !== 'CONFIRMEE') {
+        if ('CONFIRMEE' !== $this->statut) {
             return false;
         }
-        
+
         $now = new \DateTime();
         $dateDepart = $this->trajet->getDateDepart();
         $interval = $now->diff($dateDepart);
-        
+
         // Peut annuler jusqu'à 2h avant le départ
-        return $interval->h >= 2 || $interval->invert === 1;
+        return $interval->h >= 2 || 1 === $interval->invert;
     }
 }

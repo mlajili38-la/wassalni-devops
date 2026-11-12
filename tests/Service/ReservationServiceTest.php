@@ -45,7 +45,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function reserver_placesSuffisantes_creeReservationConfirmee(): void
+    public function reserverPlacesSuffisantesCreeReservationConfirmee(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();
@@ -58,7 +58,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function reserver_placesSuffisantes_diminueLesPlacesDuTrajet(): void
+    public function reserverPlacesSuffisantesDiminueLesPlacesDuTrajet(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();
@@ -71,7 +71,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function reserver_pasAssezDePlaces_leveException(): void
+    public function reserverPasAssezDePlacesLeveException(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();
@@ -83,7 +83,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function reserver_dejaReserveSurCeTrajet_leveException(): void
+    public function reserverDejaReserveSurCeTrajetLeveException(): void
     {
         // Arrange : MOCK du repository, qui vérifie aussi l'interaction
         $reservationExistante = $this->creerReservationConfirmee(1);
@@ -101,7 +101,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function annuler_reservationConfirmee_passeAAnnulee(): void
+    public function annulerReservationConfirmeePasseAAnnulee(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();
@@ -115,7 +115,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function annuler_reservationConfirmee_rendLesPlacesAuTrajet(): void
+    public function annulerReservationConfirmeeRendLesPlacesAuTrajet(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();
@@ -129,7 +129,7 @@ class ReservationServiceTest extends TestCase
     }
 
     #[Test]
-    public function annuler_reservationDejaAnnulee_leveException(): void
+    public function annulerReservationDejaAnnuleeLeveException(): void
     {
         // Arrange
         $service = $this->creerServiceAvecStub();

@@ -15,23 +15,23 @@ class Vehicule
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: "La marque est obligatoire")]
+    #[Assert\NotBlank(message: 'La marque est obligatoire')]
     #[Assert\Length(min: 2, max: 50)]
     private ?string $marque = null;
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: "Le modèle est obligatoire")]
+    #[Assert\NotBlank(message: 'Le modèle est obligatoire')]
     #[Assert\Length(min: 2, max: 50)]
     private ?string $modele = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\NotBlank(message: "L'immatriculation est obligatoire")]
-    #[Assert\Regex(pattern: "/^[A-Z0-9]{1,10}$/", message: "Immatriculation invalide")]
+    #[Assert\Regex(pattern: '/^[A-Z0-9]{1,10}$/', message: 'Immatriculation invalide')]
     private ?string $immatriculation = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le nombre de places est obligatoire")]
-    #[Assert\Range(min: 1, max: 9, message: "Le nombre de places doit être entre 1 et 9")]
+    #[Assert\NotBlank(message: 'Le nombre de places est obligatoire')]
+    #[Assert\Range(min: 1, max: 9, notInRangeMessage: 'Le nombre de places doit être entre 1 et 9')]
     private ?int $nbPlaces = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -66,6 +66,7 @@ class Vehicule
     public function setMarque(string $marque): static
     {
         $this->marque = $marque;
+
         return $this;
     }
 
@@ -77,6 +78,7 @@ class Vehicule
     public function setModele(string $modele): static
     {
         $this->modele = $modele;
+
         return $this;
     }
 
@@ -88,6 +90,7 @@ class Vehicule
     public function setImmatriculation(string $immatriculation): static
     {
         $this->immatriculation = $immatriculation;
+
         return $this;
     }
 
@@ -99,6 +102,7 @@ class Vehicule
     public function setNbPlaces(int $nbPlaces): static
     {
         $this->nbPlaces = $nbPlaces;
+
         return $this;
     }
 
@@ -110,6 +114,7 @@ class Vehicule
     public function setCouleur(?string $couleur): static
     {
         $this->couleur = $couleur;
+
         return $this;
     }
 
@@ -121,6 +126,7 @@ class Vehicule
     public function setDateAjout(\DateTimeInterface $dateAjout): static
     {
         $this->dateAjout = $dateAjout;
+
         return $this;
     }
 
@@ -132,6 +138,7 @@ class Vehicule
     public function setProprietaire(?User $proprietaire): static
     {
         $this->proprietaire = $proprietaire;
+
         return $this;
     }
 
@@ -149,6 +156,7 @@ class Vehicule
             $this->trajets->add($trajet);
             $trajet->setVehicule($this);
         }
+
         return $this;
     }
 
@@ -159,11 +167,12 @@ class Vehicule
                 $trajet->setVehicule(null);
             }
         }
+
         return $this;
     }
 
     public function getFullName(): string
     {
-        return $this->marque . ' ' . $this->modele . ' (' . $this->immatriculation . ')';
+        return $this->marque.' '.$this->modele.' ('.$this->immatriculation.')';
     }
 }

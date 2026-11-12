@@ -21,30 +21,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: "L'email est obligatoire")]
-    #[Assert\Email(message: "Format email invalide")]
+    #[Assert\Email(message: 'Format email invalide')]
     private ?string $email = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "Le nom est obligatoire")]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\Length(min: 2, max: 100)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "Le prénom est obligatoire")]
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
     #[Assert\Length(min: 2, max: 100)]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: "Le téléphone est obligatoire")]
-    #[Assert\Regex(pattern: "/^[0-9]{8}$/", message: "Le numéro doit contenir 8 chiffres")]
+    #[Assert\NotBlank(message: 'Le téléphone est obligatoire')]
+    #[Assert\Regex(pattern: '/^[0-9]{8}$/', message: 'Le numéro doit contenir 8 chiffres')]
     private ?string $telephone = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le mot de passe est obligatoire")]
-    #[Assert\Length(min: 6, message: "Le mot de passe doit faire au moins 6 caractères")]
+    #[Assert\NotBlank(message: 'Le mot de passe est obligatoire')]
+    #[Assert\Length(min: 6, minMessage: 'Le mot de passe doit faire au moins 6 caractères')]
     private ?string $password = null;
     #[ORM\Column(length: 20)]
     private ?string $statut = 'ACTIF';
@@ -71,9 +71,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->vehicules = new ArrayCollection();
         $this->reclamations = new ArrayCollection();
         $this->dateInscription = new \DateTime();
-        $this->roles = ['ROLE_PASSAGER']; 
+        $this->roles = ['ROLE_PASSAGER'];
         $this->avisDonnes = new ArrayCollection();
-    $this->avisRecus = new ArrayCollection();
+        $this->avisRecus = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -89,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -100,6 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
         return $this;
     }
 
@@ -111,6 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
+
         return $this;
     }
 
@@ -122,6 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
+
         return $this;
     }
 
@@ -133,6 +137,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
         return $this;
     }
 
@@ -144,6 +149,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDateInscription(?\DateTimeInterface $dateInscription): static
     {
         $this->dateInscription = $dateInscription;
+
         return $this;
     }
 
@@ -172,6 +178,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
+
         return $this;
     }
 
@@ -186,6 +193,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
         return $this;
     }
 
@@ -212,6 +220,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->trajets->add($trajet);
             $trajet->setConducteur($this);
         }
+
         return $this;
     }
 
@@ -222,6 +231,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $trajet->setConducteur(null);
             }
         }
+
         return $this;
     }
 
@@ -239,6 +249,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->reservations->add($reservation);
             $reservation->setPassager($this);
         }
+
         return $this;
     }
 
@@ -249,6 +260,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $reservation->setPassager(null);
             }
         }
+
         return $this;
     }
 
@@ -266,6 +278,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->vehicules->add($vehicule);
             $vehicule->setProprietaire($this);
         }
+
         return $this;
     }
 
@@ -276,6 +289,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $vehicule->setProprietaire(null);
             }
         }
+
         return $this;
     }
 
@@ -293,6 +307,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $this->reclamations->add($reclamation);
             $reclamation->setUser($this);
         }
+
         return $this;
     }
 
@@ -303,94 +318,100 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $reclamation->setUser(null);
             }
         }
+
         return $this;
     }
 
     public function getFullName(): string
     {
-        return $this->prenom . ' ' . $this->nom;
+        return $this->prenom.' '.$this->nom;
     }
     // ========== AJOUTER CES PROPRIÉTÉS ==========
-#[ORM\Column(type: 'boolean')]
-private bool $isVerified = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
 
-#[ORM\Column(type: 'string', length: 100, nullable: true)]
-private ?string $verificationToken = null;
+    #[ORM\Column(type: 'string', length: 100, nullable: true)]
+    private ?string $verificationToken = null;
 
-#[ORM\Column(type: 'datetime', nullable: true)]
-private ?\DateTimeInterface $verificationTokenExpiresAt = null;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $verificationTokenExpiresAt = null;
 
-// ========== AJOUTER CES GETTERS/SETTERS ==========
+    // ========== AJOUTER CES GETTERS/SETTERS ==========
 
-public function isVerified(): bool
-{
-    return $this->isVerified;
-}
-
-public function setIsVerified(bool $isVerified): static
-{
-    $this->isVerified = $isVerified;
-    return $this;
-}
-
-public function getVerificationToken(): ?string
-{
-    return $this->verificationToken;
-}
-
-public function setVerificationToken(?string $verificationToken): static
-{
-    $this->verificationToken = $verificationToken;
-    return $this;
-}
-
-public function getVerificationTokenExpiresAt(): ?\DateTimeInterface
-{
-    return $this->verificationTokenExpiresAt;
-}
-
-public function setVerificationTokenExpiresAt(?\DateTimeInterface $verificationTokenExpiresAt): static
-{
-    $this->verificationTokenExpiresAt = $verificationTokenExpiresAt;
-    return $this;
-}
-
-public function generateVerificationToken(): void
-{
-    $this->verificationToken = bin2hex(random_bytes(32));
-    $this->verificationTokenExpiresAt = new \DateTime('+24 hours');
-}
-#[ORM\OneToMany(mappedBy: 'passager', targetEntity: Avis::class)]
-private Collection $avisDonnes;
-
-#[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Avis::class)]
-private Collection $avisRecus;
-
-
-public function getAvisDonnes(): Collection
-{
-    return $this->avisDonnes;
-}
-
-public function getAvisRecus(): Collection
-{
-    return $this->avisRecus;
-}
-
-public function getNoteMoyenne(): float
-{
-    $total = 0;
-    $count = count($this->avisRecus);
-    if ($count === 0) return 0;
-    
-    foreach ($this->avisRecus as $avis) {
-        $total += $avis->getNote();
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
     }
-    return round($total / $count, 1);
-}
 
-public function getNombreAvis(): int
-{
-    return count($this->avisRecus);
-}
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
+    }
+
+    public function setVerificationToken(?string $verificationToken): static
+    {
+        $this->verificationToken = $verificationToken;
+
+        return $this;
+    }
+
+    public function getVerificationTokenExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->verificationTokenExpiresAt;
+    }
+
+    public function setVerificationTokenExpiresAt(?\DateTimeInterface $verificationTokenExpiresAt): static
+    {
+        $this->verificationTokenExpiresAt = $verificationTokenExpiresAt;
+
+        return $this;
+    }
+
+    public function generateVerificationToken(): void
+    {
+        $this->verificationToken = bin2hex(random_bytes(32));
+        $this->verificationTokenExpiresAt = new \DateTime('+24 hours');
+    }
+    #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Avis::class)]
+    private Collection $avisDonnes;
+
+    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Avis::class)]
+    private Collection $avisRecus;
+
+    public function getAvisDonnes(): Collection
+    {
+        return $this->avisDonnes;
+    }
+
+    public function getAvisRecus(): Collection
+    {
+        return $this->avisRecus;
+    }
+
+    public function getNoteMoyenne(): float
+    {
+        $total = 0;
+        $count = count($this->avisRecus);
+        if (0 === $count) {
+            return 0;
+        }
+
+        foreach ($this->avisRecus as $avis) {
+            $total += $avis->getNote();
+        }
+
+        return round($total / $count, 1);
+    }
+
+    public function getNombreAvis(): int
+    {
+        return count($this->avisRecus);
+    }
 }

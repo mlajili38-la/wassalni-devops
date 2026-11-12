@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Vehicule;
 use App\Service\MailerService;
-use App\Repository\UserRepository;  // ← AJOUTER CETTE LIGNE
+// ← AJOUTER CETTE LIGNE
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,20 +15,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class RegistrationWizardController extends AbstractController
 {
-    //enregistre tous les données 
+    // enregistre tous les données
     #[Route('/inscription/etape/{step}', name: 'app_register_wizard', defaults: ['step' => 1])]
     public function registerWizard(
-        Request $request, 
+        Request $request,
         int $step,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $passwordHasher,
-        MailerService $mailerService
+        MailerService $mailerService,
     ): Response {
         $session = $request->getSession();
         $data = $session->get('registration_data', []);
         $userType = $data['userType'] ?? null;
-        $maxStep = ($userType === 'conducteur') ? 5 : 4;
-        
+        $maxStep = ('conducteur' === $userType) ? 5 : 4;
+
         if ($step > $maxStep) {
             return $this->redirectToRoute('app_register_wizard', ['step' => $maxStep]);
         }
@@ -40,16 +40,17 @@ class RegistrationWizardController extends AbstractController
                     if ($userType) {
                         $data['userType'] = $userType;
                         $session->set('registration_data', $data);
+
                         return $this->redirectToRoute('app_register_wizard', ['step' => 2]);
                     }
                     $this->addFlash('error', 'Veuillez sélectionner un type de compte');
                     break;
-                    
+
                 case 2:
                     $email = $request->request->get('email');
                     $password = $request->request->get('password');
                     $passwordConfirm = $request->request->get('password_confirm');
-                    
+
                     if (!$email) {
                         $this->addFlash('error', 'L\'email est obligatoire');
                     } elseif (!$password) {
@@ -62,16 +63,17 @@ class RegistrationWizardController extends AbstractController
                         $data['email'] = $email;
                         $data['password'] = $password;
                         $session->set('registration_data', $data);
+
                         return $this->redirectToRoute('app_register_wizard', ['step' => 3]);
                     }
                     break;
-                    
+
                 case 3:
                     $nom = $request->request->get('nom');
                     $prenom = $request->request->get('prenom');
                     $telephone = $request->request->get('telephone');
                     $adresse = $request->request->get('adresse');
-                    
+
                     if (!$nom) {
                         $this->addFlash('error', 'Le nom est obligatoire');
                     } elseif (!$prenom) {
@@ -84,22 +86,22 @@ class RegistrationWizardController extends AbstractController
                         $data['telephone'] = $telephone;
                         $data['adresse'] = $adresse;
                         $session->set('registration_data', $data);
-                        
-                        if ($userType === 'conducteur') {
+
+                        if ('conducteur' === $userType) {
                             return $this->redirectToRoute('app_register_wizard', ['step' => 4]);
-                        } else {
-                            return $this->createUser($data, $session, $em, $passwordHasher, $mailerService);
                         }
+
+                        return $this->createUser($data, $session, $em, $passwordHasher, $mailerService);
                     }
                     break;
-                    
+
                 case 4:
                     $marque = $request->request->get('marque');
                     $modele = $request->request->get('modele');
                     $immatriculation = $request->request->get('immatriculation');
                     $nbPlaces = $request->request->get('nbPlaces');
                     $couleur = $request->request->get('couleur');
-                    
+
                     if (!$marque) {
                         $this->addFlash('error', 'La marque est obligatoire');
                     } elseif (!$modele) {
@@ -115,6 +117,7 @@ class RegistrationWizardController extends AbstractController
                         $data['nbPlaces'] = $nbPlaces;
                         $data['couleur'] = $couleur;
                         $session->set('registration_data', $data);
+
                         return $this->createUser($data, $session, $em, $passwordHasher, $mailerService);
                     }
                     break;
@@ -124,7 +127,7 @@ class RegistrationWizardController extends AbstractController
         return $this->render("registration/step$step.html.twig", [
             'step' => $step,
             'totalSteps' => $maxStep,
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -134,6 +137,7 @@ class RegistrationWizardController extends AbstractController
         if ($existingUser) {
             $session->remove('registration_data');
             $this->addFlash('error', 'Cet email est déjà utilisé.');
+
             return $this->redirectToRoute('app_register_wizard', ['step' => 1]);
         }
 
@@ -144,14 +148,14 @@ class RegistrationWizardController extends AbstractController
         $user->setTelephone($data['telephone'] ?? '');
         $user->setStatut('ACTIF');
         $user->setIsVerified(false);
-        
+
         $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
         $user->generateVerificationToken();
-        
-        if ($data['userType'] === 'conducteur') {
+
+        if ('conducteur' === $data['userType']) {
             $user->setRoles(['ROLE_CONDUCTEUR']);
-            
+
             if (isset($data['marque']) && isset($data['modele'])) {
                 $vehicule = new Vehicule();
                 $vehicule->setMarque($data['marque']);
@@ -160,7 +164,7 @@ class RegistrationWizardController extends AbstractController
                 $vehicule->setNbPlaces($data['nbPlaces'] ?? 4);
                 $vehicule->setCouleur($data['couleur'] ?? null);
                 $vehicule->setProprietaire($user);
-                
+
                 $em->persist($vehicule);
             }
         } else {
@@ -169,13 +173,13 @@ class RegistrationWizardController extends AbstractController
 
         $em->persist($user);
         $em->flush();
-        
+
         // Stocker l'email dans la session
         $session->set('last_registered_email', $user->getEmail());
-        
+
         $mailerService->sendVerificationEmail($user);
         $session->remove('registration_data');
-        
+
         return $this->redirectToRoute('app_verify_waiting');
     }
 }

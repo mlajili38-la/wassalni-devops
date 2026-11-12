@@ -9,13 +9,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    //ychouf el user mconnect bech yhezou  lel dashbord el 5assa bihe 
+    // ychouf el user mconnect bech yhezou  lel dashbord el 5assa bihe
     public function index(): Response
     {
         if ($this->getUser()) {
             $user = $this->getUser();
             $roles = $user->getRoles();
-            
+
             if (in_array('ROLE_ADMIN', $roles)) {
                 return $this->redirectToRoute('admin_dashboard');
             } elseif (in_array('ROLE_CONDUCTEUR', $roles)) {
@@ -24,7 +24,7 @@ class HomeController extends AbstractController
                 return $this->redirectToRoute('trajet_search');
             }
         }
-        
+
         return $this->render('home/index.html.twig');
     }
 }

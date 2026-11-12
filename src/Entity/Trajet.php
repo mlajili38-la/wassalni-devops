@@ -17,28 +17,28 @@ class Trajet
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "La ville de départ est obligatoire")]
+    #[Assert\NotBlank(message: 'La ville de départ est obligatoire')]
     #[Assert\Length(min: 2, max: 100)]
     private ?string $villeDepart = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: "La destination est obligatoire")]
+    #[Assert\NotBlank(message: 'La destination est obligatoire')]
     #[Assert\Length(min: 2, max: 100)]
     private ?string $destination = null;
 
     #[ORM\Column(type: 'datetime')]
-    #[Assert\NotBlank(message: "La date de départ est obligatoire")]
-    #[Assert\GreaterThan("today", message: "La date de départ doit être dans le futur")]
+    #[Assert\NotBlank(message: 'La date de départ est obligatoire')]
+    #[Assert\GreaterThan('today', message: 'La date de départ doit être dans le futur')]
     private ?\DateTimeInterface $dateDepart = null;
 
     #[ORM\Column(type: 'datetime')]
     #[Assert\NotBlank(message: "La date d'arrivée est obligatoire")]
-    #[Assert\GreaterThan(propertyPath: "dateDepart", message: "La date d'arrivée doit être après la date de départ")]
+    #[Assert\GreaterThan(propertyPath: 'dateDepart', message: "La date d'arrivée doit être après la date de départ")]
     private ?\DateTimeInterface $dateArrivee = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le prix est obligatoire")]
-    #[Assert\Positive(message: "Le prix doit être positif")]
+    #[Assert\NotBlank(message: 'Le prix est obligatoire')]
+    #[Assert\Positive(message: 'Le prix doit être positif')]
     private ?float $prix = null;
 
     #[ORM\Column]
@@ -57,9 +57,9 @@ class Trajet
     #[ORM\JoinColumn(nullable: false)]
     private ?User $conducteur = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'trajets')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message: "Veuillez sélectionner un véhicule")]
+    #[Assert\NotBlank(message: 'Veuillez sélectionner un véhicule')]
     private ?Vehicule $vehicule = null;
 
     #[ORM\OneToMany(mappedBy: 'trajet', targetEntity: Reservation::class, cascade: ['remove'])]
@@ -84,6 +84,7 @@ class Trajet
     public function setVilleDepart(string $villeDepart): static
     {
         $this->villeDepart = $villeDepart;
+
         return $this;
     }
 
@@ -95,6 +96,7 @@ class Trajet
     public function setDestination(string $destination): static
     {
         $this->destination = $destination;
+
         return $this;
     }
 
@@ -106,6 +108,7 @@ class Trajet
     public function setDateDepart(\DateTimeInterface $dateDepart): static
     {
         $this->dateDepart = $dateDepart;
+
         return $this;
     }
 
@@ -117,6 +120,7 @@ class Trajet
     public function setDateArrivee(\DateTimeInterface $dateArrivee): static
     {
         $this->dateArrivee = $dateArrivee;
+
         return $this;
     }
 
@@ -128,6 +132,7 @@ class Trajet
     public function setPrix(float $prix): static
     {
         $this->prix = $prix;
+
         return $this;
     }
 
@@ -139,6 +144,7 @@ class Trajet
     public function setPlacesDisponibles(int $placesDisponibles): static
     {
         $this->placesDisponibles = $placesDisponibles;
+
         return $this;
     }
 
@@ -150,6 +156,7 @@ class Trajet
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
         return $this;
     }
 
@@ -161,6 +168,7 @@ class Trajet
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -172,6 +180,7 @@ class Trajet
     public function setDateCreation(\DateTimeInterface $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
+
         return $this;
     }
 
@@ -183,6 +192,7 @@ class Trajet
     public function setConducteur(?User $conducteur): static
     {
         $this->conducteur = $conducteur;
+
         return $this;
     }
 
@@ -194,6 +204,7 @@ class Trajet
     public function setVehicule(?Vehicule $vehicule): static
     {
         $this->vehicule = $vehicule;
+
         return $this;
     }
 
@@ -211,6 +222,7 @@ class Trajet
             $this->reservations->add($reservation);
             $reservation->setTrajet($this);
         }
+
         return $this;
     }
 
@@ -221,6 +233,7 @@ class Trajet
                 $reservation->setTrajet(null);
             }
         }
+
         return $this;
     }
 
@@ -228,10 +241,11 @@ class Trajet
     {
         $total = 0;
         foreach ($this->reservations as $reservation) {
-            if ($reservation->getStatut() === 'CONFIRMEE') {
+            if ('CONFIRMEE' === $reservation->getStatut()) {
                 $total += $reservation->getNbPlaces();
             }
         }
+
         return $total;
     }
 
@@ -242,6 +256,6 @@ class Trajet
 
     public function getItineraire(): string
     {
-        return $this->villeDepart . ' → ' . $this->destination;
+        return $this->villeDepart.' → '.$this->destination;
     }
 }

@@ -13,12 +13,26 @@ env:
   APP_ENV: test
   APP_DEBUG: "1"
   APP_SECRET: ci-only-secret-not-for-production
-  DATABASE_URL: "mysql://wassalni:wassalni@127.0.0.1:3306/wassalni?serverVersion=8.0.32&charset=utf8mb4"
+  # Base de TEST jetable du job (service MySQL ci-dessous). En env "test", Doctrine
+  # ajoute le suffixe "_test" : les tests utilisent la base "wassalni_test".
+  DATABASE_URL: "mysql://root:ci-only-root-password@127.0.0.1:3306/wassalni?serverVersion=8.0.32&charset=utf8mb4"
+  # Quality gate : couverture minimale des lignes (en %), voir scripts/check-coverage.php.
+  COVERAGE_MIN: "10"
 
 jobs:
   quality:
     name: Quality, tests and dependency audit
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-only-root-password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-only-root-password --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -28,7 +42,7 @@ jobs:
         with:
           php-version: "8.3"
           extensions: intl, pdo_mysql
-          coverage: none
+          coverage: pcov
 
       - name: Cache Composer downloads
         uses: actions/cache@v4
@@ -45,23 +59,45 @@ jobs:
       - name: Check PHP syntax
         run: find src tests -type f -name '*.php' -print0 | xargs -0 -n1 php -l
 
+      - name: Check code style (PHP-CS-Fixer)
+        run: vendor/bin/php-cs-fixer check --diff --show-progress=none
+
+      - name: Static analysis (PHPStan)
+        run: |
+          php bin/console cache:warmup --env=dev
+          vendor/bin/phpstan analyse --no-progress --memory-limit=1G --error-format=github
+
       - name: Validate Symfony container
         run: php bin/console lint:container --env=test
 
       - name: Audit dependencies
         run: composer audit --no-interaction
 
-      - name: Run unit and functional tests
+      - name: Prepare test database (MySQL, migrations)
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+          php bin/console doctrine:schema:validate --env=test
+
+      - name: Run unit and integration tests with coverage
         run: |
           mkdir -p build/reports
-          vendor/bin/phpunit --log-junit build/reports/junit.xml
+          vendor/bin/phpunit \
+            --log-junit build/reports/junit.xml \
+            --testdox-text build/reports/testdox.txt \
+            --coverage-clover build/reports/clover.xml \
+            --coverage-html build/reports/coverage-html \
+            --coverage-text --only-summary-for-coverage-text
 
-      - name: Archive test report
+      - name: Coverage quality gate
+        run: php scripts/check-coverage.php build/reports/clover.xml "${COVERAGE_MIN}"
+
+      - name: Archive test and coverage reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: junit-report
-          path: build/reports/junit.xml
+          name: test-reports-${{ github.sha }}
+          path: build/reports/
           if-no-files-found: ignore
 
   container:

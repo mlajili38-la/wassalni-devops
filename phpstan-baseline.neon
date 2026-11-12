@@ -1,0 +1,343 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getReservations\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/AvisController.php
+
+		-
+			message: '#^Parameter \#1 \$passager of method App\\Entity\\Avis\:\:setPassager\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/AvisController.php
+
+		-
+			message: '#^Parameter \#1 \$user of method App\\Entity\\Reclamation\:\:setUser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/ReclamationController.php
+
+		-
+			message: '#^Parameter \#1 \$passager of method App\\Entity\\Reservation\:\:setPassager\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: src/Controller/ReservationController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getVehicules\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/TrajetController.php
+
+		-
+			message: '#^Parameter \#1 \$conducteur of method App\\Entity\\Trajet\:\:setConducteur\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/TrajetController.php
+
+		-
+			message: '#^Parameter \#1 \$proprietaire of method App\\Entity\\Vehicule\:\:setProprietaire\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Controller/VehiculeController.php
+
+		-
+			message: '#^Property App\\Entity\\Avis\:\:\$conducteur type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Avis.php
+
+		-
+			message: '#^Property App\\Entity\\Avis\:\:\$dateCreation type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Avis.php
+
+		-
+			message: '#^Property App\\Entity\\Avis\:\:\$note type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Avis.php
+
+		-
+			message: '#^Property App\\Entity\\Avis\:\:\$passager type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Avis.php
+
+		-
+			message: '#^Property App\\Entity\\Avis\:\:\$trajet type mapping mismatch\: property can contain App\\Entity\\Trajet\|null but database expects App\\Entity\\Trajet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Avis.php
+
+		-
+			message: '#^Property App\\Entity\\Reclamation\:\:\$dateCreation type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reclamation.php
+
+		-
+			message: '#^Property App\\Entity\\Reclamation\:\:\$message type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reclamation.php
+
+		-
+			message: '#^Property App\\Entity\\Reclamation\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reclamation.php
+
+		-
+			message: '#^Property App\\Entity\\Reclamation\:\:\$sujet type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reclamation.php
+
+		-
+			message: '#^Property App\\Entity\\Reclamation\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Reclamation.php
+
+		-
+			message: '#^Property App\\Entity\\Reservation\:\:\$dateReservation type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reservation.php
+
+		-
+			message: '#^Property App\\Entity\\Reservation\:\:\$nbPlaces type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reservation.php
+
+		-
+			message: '#^Property App\\Entity\\Reservation\:\:\$passager type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Reservation.php
+
+		-
+			message: '#^Property App\\Entity\\Reservation\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Reservation.php
+
+		-
+			message: '#^Property App\\Entity\\Reservation\:\:\$trajet type mapping mismatch\: property can contain App\\Entity\\Trajet\|null but database expects App\\Entity\\Trajet\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Reservation.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$conducteur type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$dateArrivee type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$dateCreation type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$dateDepart type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$destination type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$placesDisponibles type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$prix type mapping mismatch\: property can contain float\|null but database expects float\|int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$reservations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reservation\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$vehicule type mapping mismatch\: property can contain App\\Entity\\Vehicule\|null but database expects App\\Entity\\Vehicule\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\Trajet\:\:\$villeDepart type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Trajet.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$avisDonnes type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Avis\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$avisRecus type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Avis\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$nom type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$password type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$prenom type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$reclamations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reclamation\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$reservations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reservation\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$telephone type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$trajets type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Trajet\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$vehicules type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Vehicule\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$dateAjout type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeInterface\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$immatriculation type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$marque type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$modele type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$nbPlaces type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$proprietaire type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Property App\\Entity\\Vehicule\:\:\$trajets type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Trajet\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Vehicule.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Session\\SessionInterface\:\:getFlashBag\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Security/LoginFormAuthenticator.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:isVerified\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Security/LoginFormAuthenticator.php
+
+		-
+			message: '#^Property App\\Security\\LoginFormAuthenticator\:\:\$csrfTokenManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Security/LoginFormAuthenticator.php
+
+		-
+			message: '#^Property App\\Security\\LoginFormAuthenticator\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Security/LoginFormAuthenticator.php
+
+		-
+			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: tests/bootstrap.php

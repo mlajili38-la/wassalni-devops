@@ -1,0 +1,11 @@
+includes:
+    - phpstan-baseline.neon
+
+# Analyse statique PHPStan. En CI : "vendor/bin/phpstan analyse" (echoue si une erreur est trouvee).
+parameters:
+    level: 5
+    paths:
+        - src
+        - tests
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
