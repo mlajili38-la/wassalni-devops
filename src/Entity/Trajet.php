@@ -57,7 +57,7 @@ class Trajet
     #[ORM\JoinColumn(nullable: false)]
     private ?User $conducteur = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'trajets')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotBlank(message: 'Veuillez sélectionner un véhicule')]
     private ?Vehicule $vehicule = null;
