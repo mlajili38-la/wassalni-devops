@@ -23,7 +23,7 @@ on:
       - "scripts/rollback.sh"
       - "scripts/monitor-health.sh"
 
-# Groupe propre a l'xercice et a la branche : chaque runner est isole, pas besoin de partager
+# Groupe propre a l'exercice et a la branche : chaque runner est isole, pas besoin de partager
 # le groupe du deploiement (un groupe partage annulait les executions en attente).
 concurrency:
   group: incident-drill-${{ github.ref }}
