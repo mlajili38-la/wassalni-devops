@@ -47,7 +47,7 @@ $env:XDEBUG_MODE = "coverage"; vendor/bin/phpunit --coverage-html build/reports/
 | `integration` | `tests/Integration` | **MySQL `wassalni_test`** | réservation et annulation réelles, double réservation refusée par une vraie requête, unicité de l'email, contraintes de validation, requêtes HTTP (`/health`, pages publiques, redirection d'une page protégée) |
 
 **Base de test distincte** : en environnement `test`, `config/packages/doctrine.yaml` ajoute le suffixe `_test`
-au nom de la base. Les tests n'utilisent donc jamais la base de développement. Chaque test d'intégration
+au nom de la base. Les tests n'utilisent donc jamais la base de développement ; un garde-fou dans `DatabaseTestCase` fait échouer le test si la base ne se termine pas par `_test`. Chaque test d'intégration
 s'exécute dans une transaction **annulée** à la fin (`tests/Integration/DatabaseTestCase.php`) : la base reste propre.
 En CI, la base est un service MySQL 8.0 jetable, créé pour le job puis détruit.
 

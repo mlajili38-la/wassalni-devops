@@ -21,6 +21,13 @@ abstract class DatabaseTestCase extends KernelTestCase
     {
         self::bootKernel();
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
+
+        // Garde-fou : refuser de s'executer ailleurs que sur une base de test (*_test).
+        $base = (string) $this->em->getConnection()->getDatabase();
+        if (!str_ends_with($base, '_test')) {
+            self::fail(sprintf('Les tests d\'integration doivent utiliser une base *_test, base actuelle : "%s".', $base));
+        }
+
         $this->em->getConnection()->beginTransaction();
     }
 
