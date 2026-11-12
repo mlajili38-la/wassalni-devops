@@ -1,5 +1,8 @@
-# Dependabot : propose automatiquement des Pull Requests de mise a jour de securite (Lot 5).
+# Dependabot : propose automatiquement des Pull Requests de mise a jour (Lot 5).
 # Chaque PR Dependabot passe par le meme pipeline (tests, Gitleaks, Trivy) avant fusion.
+# Les montees de version MAJEURE sont ignorees : elles changent la pile technique
+# (ex. Symfony 7.4 -> 8, PHP 8.3 -> 8.5) et doivent faire l'objet d'une decision et d'une branche dediees.
+# Les correctifs de securite restent proposes (alertes Dependabot actives).
 version: 2
 updates:
   - package-ecosystem: composer
@@ -9,6 +12,9 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "build(deps)"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: docker
     directory: "/"
@@ -16,6 +22,10 @@ updates:
       interval: weekly
     commit-message:
       prefix: "build(docker)"
+    ignore:
+      # php:8.3-apache : rester sur PHP 8.3 (version cible du projet) ; les mises a jour de l'image 8.3 sont recuperees par "docker build --pull".
+      - dependency-name: "php"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
   - package-ecosystem: github-actions
     directory: "/"
@@ -23,3 +33,6 @@ updates:
       interval: weekly
     commit-message:
       prefix: "ci(deps)"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
