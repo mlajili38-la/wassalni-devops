@@ -1,0 +1,58 @@
+# Preuves Lot 6 - deploiement en environnement de test (2026-11-12 23:04)
+# Aucun secret : valeurs fournies par les secrets GitHub TEST_* (masquees *** par GitHub).
+
+## 1. GitHub Actions - workflow 'Deploy test' (PR #15, image latest tiree de GHCR)
+Run : https://github.com/mlajili38-la/wassalni-devops/actions/runs/43315730321 -> success
+CI de la meme PR : https://github.com/mlajili38-la/wassalni-devops/actions/runs/43315730210 -> success (3 jobs)
+
+Evenement pull_request -> version a deployer : latest
+Secrets de test presents (valeurs masquees par GitHub).
+=== 1. Recuperation de l'image ghcr.io/mlajili38-la/wassalni-devops:latest depuis GHCR ===
+digest   : ghcr.io/mlajili38-la/wassalni-devops@sha256:4bf4f4dd65bec6fa714130b99f54069129c7939ec612b48a79b23b1df8ea3626
+revision : 7191382ddf67d7b9c6bfcaba70822166d24f33e2
+=== 2. Demarrage de l'environnement de test (Docker Compose, sans build) ===
+environnement pret en 29s
+=== 3. Etat des conteneurs ===
+SERVICE    IMAGE                                         STATUS
+app        ghcr.io/mlajili38-la/wassalni-devops:latest   Up 5 seconds (healthy)
+database   mysql:8.0                                     Up 11 seconds (healthy)
+app : healthy
+database : healthy
+=== 4. Migrations Doctrine ===
+ [OK] Up-to-date! No migrations to execute.                                     
+ [OK] The database schema is in sync with the mapping files.                    
+|                      | Current              | DoctrineMigrations\Version20260507192634                               |
+|                      | Latest               | DoctrineMigrations\Version20260507192634                               |
+| Migrations           | Executed             | 4                                                                      |
+=== 5. Sonde de sante (health check) ===
+GET /health -> HTTP 200 {"status":"ok"}
+=== 6. Smoke tests ===
+OK    /health                  corps {"status":"ok"}
+OK    /health                  HTTP 200 (attendu 200) 0.004716s
+OK    /                        HTTP 200 (attendu 200) 0.036068s
+OK    /connexion               HTTP 200 (attendu 200) 0.009367s
+OK    /inscription             HTTP 200 (attendu 200) 0.088472s
+OK    /inscription/etape/1     HTTP 200 (attendu 200) 0.013757s
+OK    /reservation/mes-reservations HTTP 302 (attendu 302) 0.007158s
+OK    /page-inexistante-smoke  HTTP 404 (attendu 404) 0.027062s
+SMOKE TESTS : OK
+=== 7. Trace de la version deployee ===
+  "image": "ghcr.io/mlajili38-la/wassalni-devops:latest",
+  "digest": "ghcr.io/mlajili38-la/wassalni-devops@sha256:4bf4f4dd65bec6fa714130b99f54069129c7939ec612b48a79b23b1df8ea3626",
+  "revision": "7191382ddf67d7b9c6bfcaba70822166d24f33e2",
+  "deployed_at": "2026-11-12T22:01:10Z",
+  "deployed_by": "mlajili38-la",
+  "workflow_run": "https://github.com/mlajili38-la/wassalni-devops/actions/runs/43315730321",
+  "result": "success"
+DEPLOIEMENT OK : ghcr.io/mlajili38-la/wassalni-devops:latest
+
+## 2. Execution locale (Docker Desktop) de scripts/deploy-test.sh 7191382 depuis GHCR
+conteneurs : app healthy, database healthy (pret en 22s) | migrations : 4 executees, Up-to-date, schema in sync
+/health 200 {"status":"ok"} | smoke tests : 8/8 OK | digest sha256:4bf4f4dd65bec6fa714130b99f54069129c7939ec612b48a79b23b1df8ea3626
+
+## 3. Versions disponibles dans GHCR (tags = SHA des commits de main)
+2026-11-12T21:52:00Z  7191382ddf67d7b9c6bfcaba70822166d24f33e2, latest
+2026-11-12T20:17:18Z  b990fde7b0479f1016658e424f6c8bf1607821e7
+2026-11-12T19:53:46Z  9bba2a8a25e3cf311f2cb9648fcd6e3e4477f6e9
+2026-11-12T19:48:57Z  b8efd787741027b4332e9a7a2f056f10a57581d9
+2026-11-07T23:02:13Z  6e1a212026b678d9d17751d27a75e10ea356cd41

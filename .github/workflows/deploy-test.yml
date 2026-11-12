@@ -1,0 +1,124 @@
+# Lot 6 - Deploiement automatise de l'image publiee dans GHCR vers l'environnement de test.
+#
+# Environnement de test : stack Docker Compose (app + MySQL 8.0) creee dans un runner GitHub Actions,
+# distincte de l'environnement de developpement (poste local / WAMP). Elle est ephemere : detruite en fin de job.
+#
+# Declencheurs :
+#  - automatique : apres chaque CI verte sur main (image du commit qui vient d'etre publiee) ;
+#  - manuel (workflow_dispatch) : deploiement d'une version choisie = etape d'approbation manuelle
+#    (les "required reviewers" des environnements GitHub ne sont pas disponibles sur un depot prive gratuit) ;
+#  - pull_request touchant le deploiement : valide le workflow avec la derniere image publiee (latest).
+name: Deploy test
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Tag GHCR a deployer (SHA complet du commit). Vide = latest."
+        required: false
+        default: ""
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-test.yml"
+      - "scripts/deploy-test.sh"
+      - "scripts/smoke-test.sh"
+      - "compose.yaml"
+      - "docker/**"
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    name: Deploy GHCR image to test environment
+    # Apres la CI : uniquement si elle a reussi (l'image n'est publiee que dans ce cas).
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      # Secrets de l'environnement de test : GitHub -> Settings -> Secrets and variables -> Actions.
+      APP_SECRET: ${{ secrets.TEST_APP_SECRET }}
+      MYSQL_PASSWORD: ${{ secrets.TEST_MYSQL_PASSWORD }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
+      COMPOSE_PROJECT_NAME: wassalni-test
+      APP_PORT: "8080"
+      DEPLOY_DIR: build/deploy
+    steps:
+      - name: Checkout deployment files of the deployed version
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Resolve image and version to deploy
+        id: version
+        env:
+          EVENT: ${{ github.event_name }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          case "$EVENT" in
+            workflow_run)      version="$RUN_SHA" ;;
+            workflow_dispatch) version="${INPUT_VERSION:-latest}" ;;
+            *)                 version="latest" ;;
+          esac
+          echo "DOCKER_IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+          echo "VERSION=${version}" >> "$GITHUB_ENV"
+          echo "Evenement ${EVENT} -> version a deployer : ${version}"
+
+      - name: Check that test secrets are configured
+        run: |
+          for name in APP_SECRET MYSQL_PASSWORD MYSQL_ROOT_PASSWORD; do
+            if [ -z "${!name}" ]; then echo "::error::Secret TEST_${name} manquant"; exit 1; fi
+          done
+          echo "Secrets de test presents (valeurs masquees par GitHub)."
+
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+
+      - name: Deploy, verify containers, migrations, health check and smoke tests
+        run: scripts/deploy-test.sh "${VERSION}"
+
+      - name: Record deployed version in job summary
+        if: always()
+        run: |
+          {
+            echo "## Deploiement en environnement de test"
+            echo "- Image : \`${DOCKER_IMAGE}:${VERSION}\`"
+            if [ -f "${DEPLOY_DIR}/deployment-record.json" ]; then
+              echo '```json'; cat "${DEPLOY_DIR}/deployment-record.json"; echo '```'
+            else
+              echo "- Resultat : **ECHEC** (voir les logs du job et l'artefact deploy-test-*)"
+            fi
+            if [ -f "${DEPLOY_DIR}/smoke-tests.txt" ]; then
+              echo '### Smoke tests'; echo '```'; cat "${DEPLOY_DIR}/smoke-tests.txt"; echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect container logs
+        if: always()
+        run: |
+          mkdir -p "${DEPLOY_DIR}"
+          docker compose -f compose.yaml ps -a > "${DEPLOY_DIR}/containers.txt" 2>&1 || true
+          docker compose -f compose.yaml logs --no-color --timestamps app > "${DEPLOY_DIR}/app.log" 2>&1 || true
+          docker compose -f compose.yaml logs --no-color --timestamps database > "${DEPLOY_DIR}/database.log" 2>&1 || true
+
+      - name: Archive deployment record and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-test-${{ github.run_id }}
+          path: build/deploy/
+          if-no-files-found: ignore
+
+      - name: Tear down test environment
+        if: always()
+        run: docker compose -f compose.yaml down --volumes
