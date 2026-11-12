@@ -1,0 +1,8 @@
+# Fins de ligne : LF pour le code et les fichiers DevOps, meme sous Windows (core.autocrlf).
+# Evite les faux echecs de PHP-CS-Fixer et les scripts shell casses dans les conteneurs Linux.
+*.php    text eol=lf
+*.sh     text eol=lf
+*.yaml   text eol=lf
+*.yml    text eol=lf
+*.neon   text eol=lf
+Dockerfile text eol=lf

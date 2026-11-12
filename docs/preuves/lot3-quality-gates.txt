@@ -1,0 +1,58 @@
+# Preuve Lot 3 - quality gates (2026-11-12 21:02)
+
+## 1. PHPStan : une erreur NOUVELLE (hors baseline) fait echouer l'analyse
+Fichier temporaire src/Service/DemoErreur.php appelant une methode inexistante :
+src\Service\DemoErreur.php:9:Call to an undefined method App\Service\DemoErreur::inexistante(). [identifier=method.notFound]
+code de sortie : 1
+
+## 2. PHP-CS-Fixer : un fichier mal formate fait echouer le controle
+   2) src\Service\DemoErreur.php
+Found 2 of 46 files that can be fixed in 1.258 seconds, 36.00 MB memory used
+code de sortie : 8
+
+## 3. Seuil de couverture (scripts/check-coverage.php)
+Couverture des lignes : 11.45 % (163/1424), seuil minimal : 10 %
+OK : seuil de couverture respecte.
+code de sortie : 0
+Couverture des lignes : 11.45 % (163/1424), seuil minimal : 50 %
+ECHEC : couverture inferieure au seuil.
+code de sortie : 1 (seuil force a 50 % pour la demonstration)
+
+## 4. Etat final (fichier de demonstration supprime)
+ [OK] No errors
+Found 0 of 45 files that can be fixed
+
+## 5. Tests PHPUnit (base MySQL 8.0 de test : wassalni_test)
+Health Controller (App\Tests\Controller\HealthController)
+ [x] Health check returns ok when database is available
+
+Pages Http (App\Tests\Integration\PagesHttp)
+ [x] Health retourne ok avec la vraie base
+ [x] Page publique repond 200 with data set "accueil"
+ [x] Page publique repond 200 with data set "connexion"
+ [x] Page publique repond 200 with data set "inscription (ancienne route corrigee)"
+ [x] Page publique repond 200 with data set "inscription etape 1"
+ [x] Page protegee redirige vers connexion
+
+Reservation Service (App\Tests\Service\ReservationService)
+ [x] Reserver places suffisantes cree reservation confirmee
+ [x] Reserver places suffisantes diminue les places du trajet
+ [x] Reserver pas assez de places leve exception
+ [x] Reserver deja reserve sur ce trajet leve exception
+ [x] Annuler reservation confirmee passe a annulee
+ [x] Annuler reservation confirmee rend les places au trajet
+ [x] Annuler reservation deja annulee leve exception
+
+Reservation Service Integration (App\Tests\Integration\ReservationServiceIntegration)
+ [x] Reservation est enregistree et places decrementees
+ [x] Double reservation refusee grace a la requete en base
+ [x] Annulation rend les places
+
+User Repository (App\Tests\Integration\UserRepository)
+ [x] Utilisateur enregistre et retrouve par email
+ [x] Email unique impose par la base
+
+Validation Entites (App\Tests\Integration\ValidationEntites)
+ [x] Vehicule refuse nombre de places hors limites
+ [x] Utilisateur refuse mot de passe trop court
+
