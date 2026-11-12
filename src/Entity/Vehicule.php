@@ -31,7 +31,7 @@ class Vehicule
 
     #[ORM\Column]
     #[Assert\NotBlank(message: 'Le nombre de places est obligatoire')]
-    #[Assert\Range(min: 1, max: 9, message: 'Le nombre de places doit être entre 1 et 9')]
+    #[Assert\Range(min: 1, max: 9, notInRangeMessage: 'Le nombre de places doit être entre 1 et 9')]
     private ?int $nbPlaces = null;
 
     #[ORM\Column(length: 20, nullable: true)]
