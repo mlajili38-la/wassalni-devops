@@ -99,7 +99,7 @@ jobs:
 
       - name: Archive test and coverage reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports-${{ github.sha }}
           path: build/reports/
@@ -138,7 +138,7 @@ jobs:
 
       - name: Archive security reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: security-reports-${{ github.sha }}
           path: build/security/
@@ -192,7 +192,7 @@ jobs:
 
       - name: Archive image security reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: image-security-reports-${{ github.sha }}
           path: build/security/
