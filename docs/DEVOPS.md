@@ -2,7 +2,7 @@
 
 ## Architecture et flux
 
-WASSALNI est une application Symfony 7.4 / PHP 8.2+ avec MySQL 8.0 et PHPUnit. La branche de livraison est la branche par défaut du dépôt (`main` ou `master`) ; les changements se font dans des branches courtes et sont intégrés par pull request après revue.
+WASSALNI est une application Symfony 7.4 / PHP 8.2+ avec MySQL 8.0 et PHPUnit. La branche de livraison est la branche par défaut du dépôt (`main` ou `master`) ; les changements se font dans des branches courtes et sont intégrés par pull request après revue. La stratégie de branches et les règles de contribution sont décrites dans [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 Le workflow `.github/workflows/ci.yml` s'exécute sur les pushes et les pull requests ciblant `main`, `master` ou `develop` :
 
