@@ -1,0 +1,8 @@
+# Alertes Gitleaks examinees et acceptees (empreinte = commit:fichier:regle:ligne).
+# Chaque entree doit etre justifiee dans docs/SECURITE.md. Toute NOUVELLE fuite fait echouer la CI.
+#
+# SEC-01 : APP_SECRET de l'environnement de developpement dans .env.dev (commit initial).
+# Cle utilisee uniquement en APP_ENV=dev ; jamais en test (.env.test), en CI (valeur jetable)
+# ni en conteneur (APP_SECRET injecte au runtime depuis .env.docker). Historique non reecrit
+# (regle du projet) ; remediation dans docs/SECURITE.md.
+a70e00494b8af0bff5345c1e36f55bb07e6082aa:.env.dev:generic-api-key:3

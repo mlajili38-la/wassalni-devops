@@ -16,6 +16,11 @@ env:
   # Base de TEST jetable du job (service MySQL ci-dessous). En env "test", Doctrine
   # ajoute le suffixe "_test" : les tests utilisent la base "wassalni_test".
   DATABASE_URL: "mysql://root:ci-only-root-password@127.0.0.1:3306/wassalni?serverVersion=8.0.32&charset=utf8mb4"
+  # Versions figees des scanners de securite (Lot 5, voir docs/SECURITE.md).
+  GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.24.3
+  TRIVY_IMAGE: aquasec/trivy:0.58.1
+  # Miroir officiel de la base Trivy (evite les limites de telechargement de ghcr.io).
+  TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
   # Quality gate : couverture minimale des lignes (en %), voir scripts/check-coverage.php.
   COVERAGE_MIN: "10"
 
@@ -100,10 +105,49 @@ jobs:
           path: build/reports/
           if-no-files-found: ignore
 
+  security:
+    name: Security scans (secrets and dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source (full history for secret scan)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Trivy vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+
+      - name: Secret scan of the whole Git history (Gitleaks)
+        # Echoue si un secret non justifie (absent de .gitleaksignore) est trouve. Valeurs masquees (--redact).
+        run: |
+          mkdir -p build/security
+          docker run --rm --user "$(id -u):$(id -g)" -v "${PWD}:/repo" "${GITLEAKS_IMAGE}" git /repo \
+            --redact --no-banner --verbose \
+            --gitleaks-ignore-path /repo/.gitleaksignore \
+            --report-format json --report-path /repo/build/security/gitleaks.json
+
+      - name: Dependency vulnerability scan (Trivy on composer.lock)
+        # Echoue sur toute vulnerabilite HIGH ou CRITICAL d'une dependance PHP.
+        run: |
+          docker run --rm -v "${PWD}:/src:ro" -v "${HOME}/.cache/trivy:/root/.cache/trivy" -e TRIVY_DB_REPOSITORY "${TRIVY_IMAGE}" \
+            fs --scanners vuln --severity HIGH,CRITICAL --exit-code 1 /src
+
+      - name: Archive security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports-${{ github.sha }}
+          path: build/security/
+          if-no-files-found: ignore
+
   container:
     name: Build, deploy-test and publish image
     runs-on: ubuntu-latest
-    needs: quality
+    needs: [quality, security]
     permissions:
       contents: read
       packages: write
@@ -118,8 +162,41 @@ jobs:
 
       - name: Build versioned image
         run: |
-          docker build --build-arg APP_VERSION="${GITHUB_SHA}" \
+          docker build --pull --build-arg APP_VERSION="${GITHUB_SHA}" \
             --tag "wassalni-ci:${GITHUB_SHA}" .
+
+      - name: Cache Trivy vulnerability database
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/trivy
+          key: trivy-db-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: trivy-db-${{ runner.os }}-
+
+      - name: Image vulnerability report (Trivy, all severities)
+        run: |
+          mkdir -p build/security
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${HOME}/.cache/trivy:/root/.cache/trivy" -v "${PWD}/build/security:/out" -e TRIVY_DB_REPOSITORY "${TRIVY_IMAGE}" \
+            image --scanners vuln --format json --output /out/trivy-image.json "wassalni-ci:${GITHUB_SHA}"
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${HOME}/.cache/trivy:/root/.cache/trivy" -e TRIVY_DB_REPOSITORY "${TRIVY_IMAGE}" \
+            image --scanners vuln --severity HIGH,CRITICAL "wassalni-ci:${GITHUB_SHA}" > build/security/trivy-image.txt
+
+      - name: Image security gate (Trivy, HIGH/CRITICAL with available fix)
+        # Bloque le deploiement et la publication si une vulnerabilite HIGH/CRITICAL corrigeable est presente.
+        # Les vulnerabilites sans correctif publie sont suivies dans docs/SECURITE.md (risque accepte).
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${HOME}/.cache/trivy:/root/.cache/trivy" -e TRIVY_DB_REPOSITORY "${TRIVY_IMAGE}" \
+            image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "wassalni-ci:${GITHUB_SHA}"
+
+      - name: Archive image security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-security-reports-${{ github.sha }}
+          path: build/security/
+          if-no-files-found: ignore
 
       - name: Deploy to ephemeral test environment
         run: |
