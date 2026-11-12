@@ -1,0 +1,91 @@
+# Preuves Lot 7 - supervision, incident controle et rollback (2026-11-12 23:17)
+# Aucun secret : valeurs fournies par les secrets GitHub TEST_* (masquees par GitHub).
+
+## 1. Exercice d'incident dans GitHub Actions
+Run : https://github.com/mlajili38-la/wassalni-devops/actions/runs/43317764697 -> success (artefact incident-drill-43317764697)
+
+# Fiche d'incident (exercice automatise)
+
+| Champ | Valeur |
+|---|---|
+| Environnement | test (Docker Compose, wassalni-test) |
+| Version stable | `ghcr.io/mlajili38-la/wassalni-devops:7191382ddf67d7b9c6bfcaba70822166d24f33e2` |
+| Version defectueuse | `ghcr.io/mlajili38-la/wassalni-devops:incident-demo` (construite localement, jamais publiee) |
+| Debut de l'incident | 22:14:30 UTC |
+| Detection | 22:14:36 UTC (MTTD : 6 s) par la sonde /health |
+| Symptomes | /health -> HTTP 503 ; smoke tests : ECHEC ; etat Docker du conteneur app : starting |
+| Diagnostic (logs) | 23 requetes /health en 503 ; log Monolog : `Application health check failed.` ; cause : `SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wassalni.table_inexistante_incident' doesn't exist` |
+| Cause racine | la version mise en service interroge une table inexistante dans la sonde de sante (defaut injecte) |
+| Action | rollback vers la version stable GHCR (`scripts/rollback.sh 7191382ddf67d7b9c6bfcaba70822166d24f33e2`), base de donnees conservee |
+| Retour a la normale | 22:15:00 UTC (rollback : 8 s ; MTTR depuis la detection : 24 s) |
+| Verification | /health 200, migrations a jour, smoke tests OK |
+
+## Indicateurs de supervision (sonde /health, 1 mesure/s)
+
+| Indicateur | Valeur |
+|---|---|
+| Mesures | 39 |
+| Mesures UP / DOWN | 19 / 20 |
+| Disponibilite sur la fenetre | 48.7 % |
+| Indisponibilite observee | de 22:14:34 a 22:14:53 UTC |
+| Temps de reponse moyen de /health (UP) | 0.013 s |
+
+## 2. Supervision : transitions de la sonde /health (monitoring.csv, 1 mesure/s)
+horodatage_utc,epoch,code_http,duree_s,statut
+22:14:25,1794521665,200,0.004167,UP
+22:14:34,1794521674,000,0.001267,DOWN
+22:14:55,1794521695,200,0.138444,UP
+(fichier complet : docs/preuves/lot7-monitoring.csv)
+
+## 3. Diagnostic : extraits des logs du conteneur app
+app-1  | 2026-11-12T22:14:36.622437140Z {"message":"Application health check failed.","context":{"exception":{"class":"Doctrine\\DBAL\\Exception\\TableNotFoundException","message":"An exception occurred while executing a query: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'wassalni.table_inexistante_incident' doesn'
+ ...
+app-1  | 2026-11-12T22:14:36.627165606Z 172.18.0.1 - - [12/Nov/2026:22:14:36 +0000] "GET /health HTTP/1.1" 503 279 "-" "curl/8.18.0"
+app-1  | 2026-11-12T22:14:36.627633681Z 172.18.0.1 - - [12/Nov/2026:22:14:36 +0000] "GET /health HTTP/1.1" 503 279 "-" "curl/8.18.0"
+Smoke tests pendant l'incident :
+ECHEC /health                  corps '{"status":"unavailable"}'
+ECHEC /health                  HTTP 503 (attendu 200) 0.005771s
+OK    /                        HTTP 200 (attendu 200) 0.034521s
+OK    /connexion               HTTP 200 (attendu 200) 0.009437s
+OK    /inscription             HTTP 200 (attendu 200) 0.085331s
+OK    /inscription/etape/1     HTTP 200 (attendu 200) 0.014134s
+OK    /reservation/mes-reservations HTTP 302 (attendu 302) 0.007144s
+OK    /page-inexistante-smoke  HTTP 404 (attendu 404) 0.026401s
+SMOKE TESTS : ECHEC
+
+Apres rollback :
+{
+  "action": "rollback",
+  "image": "ghcr.io/mlajili38-la/wassalni-devops:7191382ddf67d7b9c6bfcaba70822166d24f33e2",
+  "digest": "ghcr.io/mlajili38-la/wassalni-devops@sha256:4bf4f4dd65bec6fa714130b99f54069129c7939ec612b48a79b23b1df8ea3626",
+  "done_at": "2026-11-12T22:15:00Z",
+  "result": "success"
+}
+
+## 4. Indicateurs de la chaine (gh run list, 2026-11-12)
+Workflow                        Runs   Succes       Taux   Duree moy.
+Incident drill and rollback        1        1       100%        153 s
+Deploy test                        3        3       100%         61 s
+CI                                31       19        61%        135 s
+Dependabot Updates                 3        3       100%        169 s
+
+Repartition des executions CI terminees (succes/echec par origine) :
+      5 success main
+      5 failure main
+      5 failure PR Dependabot
+      4 success PR Dependabot
+      2 success feat/securite
+      2 success feat/qualite-tests
+      2 success feat/deploiement-test
+      1 success fix/harmoniser-mysql
+      1 success fix/docker-env-file
+      1 success feat/supervision-rollback
+      1 success docs/contribution
+      1 failure fix/docker-env-file
+      1 failure feat/qualite-tests
+
+Lecture : les 5 echecs sur main precedent la PR #1 (mise en place initiale du pipeline) ; main est vert depuis.
+Les 5 echecs Dependabot sont des montees de version MAJEURE (ex. Symfony 8, PHP 8.5) bloquees par les controles :
+defauts detectes avant deploiement, aucune n'a ete fusionnee. Les echecs de branche (fix/docker-env-file,
+feat/qualite-tests : mapping Doctrine Trajet/Vehicule) ont ete corriges avant fusion.
+Taux d'echec des deploiements en test : 0/3 ; delai de restauration mesure (exercice) : 24 s.
