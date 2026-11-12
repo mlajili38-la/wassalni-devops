@@ -87,7 +87,7 @@ Les migrations ne sont pas rejouées à l'envers, car aucune version publiée n'
 | GitHub Actions (démonstration) | *Actions* → **Incident drill and rollback** → *Run workflow* (version stable au choix) — ou `gh workflow run incident-rollback.yml -f stable_version=<SHA>` |
 | GitHub Actions (redéployer une version) | *Actions* → **Deploy test** → *Run workflow* → `version=<SHA>` |
 | Linux / runner | `scripts/rollback.sh <SHA>` (pull GHCR, `up --no-deps app`, migrations, `/health`, smoke tests, `rollback-record.json`) |
-| Windows (Compose local) | `.\scripts\rollback.ps1 -Version <SHA>` puis `Invoke-WebRequest http://localhost:8080/health` |
+| Windows (Compose local) | `$env:DOCKER_IMAGE = "ghcr.io/mlajili38-la/wassalni-devops"` puis `.\scripts\rollback.ps1 -Version <SHA>` et `Invoke-WebRequest http://localhost:8080/health` (script d'origine, **non rejoué** pendant le Lot 7 ; la procédure démontrée est `scripts/rollback.sh`) |
 
 Choisir la version stable : SHA de l'avant-dernier déploiement réussi (résumés *Deploy test*), ou liste des tags :
 `gh api /users/<propriétaire>/packages/container/wassalni-devops/versions --jq '.[].metadata.container.tags'`.
