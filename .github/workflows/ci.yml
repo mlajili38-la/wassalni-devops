@@ -13,7 +13,7 @@ env:
   APP_ENV: test
   APP_DEBUG: "1"
   APP_SECRET: ci-only-secret-not-for-production
-  DATABASE_URL: "postgresql://app:app@127.0.0.1:5432/app?serverVersion=16&charset=utf8"
+  DATABASE_URL: "mysql://wassalni:wassalni@127.0.0.1:3306/wassalni?serverVersion=8.0.32&charset=utf8mb4"
 
 jobs:
   quality:
@@ -27,7 +27,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
-          extensions: intl, pdo_pgsql
+          extensions: intl, pdo_mysql
           coverage: none
 
       - name: Cache Composer downloads
@@ -73,7 +73,8 @@ jobs:
       packages: write
     env:
       APP_SECRET: ci-only-secret-not-for-production
-      POSTGRES_PASSWORD: ci-only-database-password
+      MYSQL_PASSWORD: ci-only-database-password
+      MYSQL_ROOT_PASSWORD: ci-only-root-password
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout source
@@ -90,6 +91,23 @@ jobs:
             docker compose up -d --wait --no-build
           curl --fail --retry 10 --retry-connrefused --retry-delay 2 \
             http://localhost:8080/health
+
+      - name: Verify database migrations
+        run: |
+          docker compose exec -T app php bin/console doctrine:migrations:up-to-date --env=prod
+          docker compose exec -T app php bin/console doctrine:schema:validate --skip-mapping --env=prod
+
+      - name: Smoke test main pages
+        run: |
+          for path in /health / /connexion /inscription/etape/1; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8080${path}")
+            echo "${path} -> HTTP ${code}"
+            test "${code}" = "200"
+          done
+
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs --no-color app database
 
       - name: Publish image to GitHub Container Registry
         if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)

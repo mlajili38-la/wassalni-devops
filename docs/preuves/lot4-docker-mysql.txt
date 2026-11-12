@@ -1,0 +1,34 @@
+# Preuve d'execution Docker Compose + MySQL 8.0 - 2026-11-12 20:33 - branche fix/harmoniser-mysql
+# Commande : docker compose --env-file <fichier de test> up --build -d --wait (valeurs de test jetables, non publiees)
+
+### entrypoint logs
+app-1  | [entrypoint] Attente de la base de donnees...
+app-1  | [entrypoint] Application des migrations Doctrine...
+app-1  | [notice] Migrating up to DoctrineMigrations\Version20260507192634
+app-1  |  [OK] Successfully migrated to version: DoctrineMigrations\Version20260507192634
+app-1  | [entrypoint] Demarrage d'Apache (version mysql-check).
+### migrations up-to-date
+ [OK] Up-to-date! No migrations to execute.                                     
+### schema validate
+ [OK] The database schema is in sync with the mapping files.                    
+### tables
+Tables_in_wassalni
+avis
+doctrine_migration_versions
+messenger_messages
+reclamation
+reservation
+trajet
+user
+vehicule
+### endpoints
+/health                -> HTTP 200
+/                      -> HTTP 200
+/connexion             -> HTTP 200
+/inscription           -> HTTP 500
+/inscription/etape/1   -> HTTP 200
+/page-inexistante      -> HTTP 404
+### /health body
+{"status":"ok"}
+
+### Note : /inscription (ancienne route) -> 500 du a un import manquant dans SecurityController (bug metier preexistant, hors perimetre de cette PR). Le parcours reel est /inscription/etape/1 (200).

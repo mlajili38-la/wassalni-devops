@@ -5,8 +5,8 @@ ARG APP_VERSION=dev
 LABEL org.opencontainers.image.revision="${APP_VERSION}"
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl libicu-dev libpq-dev unzip \
-    && docker-php-ext-install -j"$(nproc)" intl pdo_pgsql \
+    && apt-get install -y --no-install-recommends curl libicu-dev unzip \
+    && docker-php-ext-install -j"$(nproc)" intl pdo_mysql \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,8 +30,8 @@ RUN composer install \
 COPY . .
 
 RUN composer dump-autoload --classmap-authoritative --no-dev --no-scripts \
-    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app?serverVersion=16 php bin/console importmap:install --env=prod \
-    && APP_SECRET=build-only-placeholder DATABASE_URL=postgresql://app:app@database:5432/app?serverVersion=16 php bin/console asset-map:compile --env=prod \
+    && APP_SECRET=build-only-placeholder DATABASE_URL="mysql://build:build@database:3306/build?serverVersion=8.0.32" php bin/console importmap:install --env=prod \
+    && APP_SECRET=build-only-placeholder DATABASE_URL="mysql://build:build@database:3306/build?serverVersion=8.0.32" php bin/console asset-map:compile --env=prod \
     && printf '%s\n' \
         '<VirtualHost *:80>' \
         '    DocumentRoot /var/www/html/public' \
@@ -47,9 +47,15 @@ RUN composer dump-autoload --classmap-authoritative --no-dev --no-scripts \
     && mkdir -p var \
     && chown -R www-data:www-data var
 
+# Entrypoint : attente MySQL + migrations Doctrine au demarrage (secrets fournis au runtime).
+COPY docker/entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint \
+    && chmod +x /usr/local/bin/docker-entrypoint
+
 EXPOSE 80
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -fsS http://localhost/health || exit 1
 
+ENTRYPOINT ["docker-entrypoint"]
 CMD ["apache2-foreground"]
