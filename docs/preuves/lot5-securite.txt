@@ -1,0 +1,44 @@
+# Preuves Lot 5 - securite (2026-11-12 21:32, branche feat/securite)
+# Aucune valeur secrete : Gitleaks lance avec --redact, seules les empreintes sont affichees.
+
+## 1. Gitleaks - historique Git (HEAD), SANS fichier d'exceptions
+1 fuite(s)
+- generic-api-key | .env.dev:3 | commit a70e004 | APP_SECRET=REDACTED
+
+## 2. Gitleaks - AVEC .gitleaksignore (alerte SEC-01 justifiee dans docs/SECURITE.md)
+INF 22 commits scanned.
+INF scanned ~1530177 bytes (1.53 MB) in 2.77s
+INF no leaks found
+code de sortie : 0
+
+## 3. Gitleaks - une NOUVELLE fuite (faux secret dans un dossier temporaire) est detectee
+INF scanned ~58 bytes (58 bytes) in 10.4ms
+WRN leaks found: 1
+code de sortie : 1
+
+## 4. Trivy - dependances PHP (composer.lock)
+composer.lock (composer) : 98 paquets analyses, 0 vulnerabilites
+
+## 5. Trivy - image Docker avant / apres durcissement du Dockerfile
+trivy-image-avant.json     total=1524 | CRITICAL=5 HIGH=147 MEDIUM=464 LOW=880 UNKNOWN=28 | avec correctif: CRITICAL=4 HIGH=2
+trivy-image-apres.json     total= 454 | CRITICAL=1 HIGH=121 MEDIUM=126 LOW=186 UNKNOWN=20 | avec correctif: CRITICAL=0 HIGH=0
+
+## 6. Regle CI (HIGH/CRITICAL avec correctif, --ignore-unfixed --exit-code 1)
+Ancienne image (Apache 2.4.69) :
+Total: 6 (HIGH: 2, CRITICAL: 4)
+code de sortie : 1
+Image durcie :
+Total: 0 (HIGH: 0, CRITICAL: 0)
+code de sortie : 0
+
+## 7. Image durcie : contenu et fonctionnement
+extensions: intl pdo_mysql 
+Server version: Apache/2.4.71 (Debian)
+gcc absent
+g++ absent
+make absent
+autoconf absent
+paquets installes : 132 (190 avant)
+fichiers .env dans l image : .env 
+Stack Compose (image durcie) : app healthy, database healthy, migrations OK
+/health 200 | / 200 | /connexion 200 | /inscription 200 | /inscription/etape/1 200

@@ -8,10 +8,11 @@ Le workflow `.github/workflows/ci.yml` s'exécute sur les pushes et les pull req
 
 1. Valide les fichiers Composer et installe les dépendances depuis `composer.lock`.
 2. Contrôles qualité bloquants : syntaxe PHP, style (PHP-CS-Fixer), analyse statique (PHPStan), conteneur Symfony, `composer audit`, migrations sur une base MySQL de test, tests unitaires et d'intégration PHPUnit avec couverture (seuil minimal). Rapports JUnit, testdox et couverture archivés comme artefact. Détails : [`QUALITE-TESTS.md`](QUALITE-TESTS.md).
-3. Construit l'image Docker identifiée par le SHA du commit, démarre l'application et MySQL 8.0 dans un environnement de test éphémère, puis vérifie `/health`, l'état des migrations Doctrine et les pages principales (smoke tests).
-4. Sur un push à la branche par défaut uniquement, publie l'image avec son SHA et le tag `latest` dans GitHub Container Registry (GHCR).
+3. En parallèle, contrôles de sécurité bloquants (job `security`) : détection de secrets dans tout l'historique Git (Gitleaks) et vulnérabilités HIGH/CRITICAL des dépendances (Trivy).
+4. Construit l'image Docker identifiée par le SHA du commit, l'analyse avec Trivy (échec si une vulnérabilité HIGH/CRITICAL corrigeable est présente), puis démarre l'application et MySQL 8.0 dans un environnement de test éphémère et vérifie `/health`, l'état des migrations Doctrine et les pages principales (smoke tests).
+5. Sur un push à la branche par défaut uniquement, publie l'image avec son SHA et le tag `latest` dans GitHub Container Registry (GHCR).
 
-L'audit Composer sert de contrôle de sécurité des dépendances et fait échouer le pipeline si une vulnérabilité connue est détectée. Aucune valeur secrète de production n'est requise par le pipeline CI.
+Les contrôles de sécurité (Gitleaks, Trivy, `composer audit`, Dependabot), leurs résultats, les actions correctives et la matrice des configurations et secrets sont décrits dans [`SECURITE.md`](SECURITE.md). Aucune valeur secrète de production n'est requise par le pipeline CI.
 
 ## Démarrage local avec Docker Compose
 
@@ -66,6 +67,8 @@ Pour revenir à une version précédemment publiée, fournir son SHA (tag d'imag
 Le script récupère cette version de l'image, la redémarre, puis attend son health check. Vérifier ensuite `/health` et les journaux du service.
 
 ## Configuration et secrets
+
+Matrice complète des environnements, configurations et secrets : [`SECURITE.md` § 3](SECURITE.md#3-matrice-des-environnements-configurations-et-secrets).
 
 | Paramètre | Local / test | CI |
 |---|---|---|
