@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef4672250004a8a1bfcae4b90b0240ab",
+    "content-hash": "5a815f33b1450d3cafbf011e9700d99b",
     "packages": [
         {
             "name": "composer/semver",
@@ -277,20 +277,20 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.6",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca"
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d2e16653a734c8784c1851ad68b02f997b53ca82",
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<=7.5 || >=14"
@@ -319,9 +319,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.6"
+                "source": "https://github.com/doctrine/deprecations/tree/1.2.0"
             },
-            "time": "2026-02-07T07:09:04+00:00"
+            "time": "2026-11-11T10:04:49+00:00"
         },
         {
             "name": "doctrine/doctrine-bundle",
@@ -4329,28 +4329,25 @@
         },
         {
             "name": "symfony/mailgun-mailer",
-            "version": "v7.4.18",
+            "version": "v8.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mailgun-mailer.git",
-                "reference": "9dd193391d38e21703455a5b41fbe8b836bbac9c"
+                "reference": "540b850b2410203e1ac21c558080871b147f1991"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mailgun-mailer/zipball/9dd193391d38e21703455a5b41fbe8b836bbac9c",
-                "reference": "9dd193391d38e21703455a5b41fbe8b836bbac9c",
+                "url": "https://api.github.com/repos/symfony/mailgun-mailer/zipball/540b850b2410203e1ac21c558080871b147f1991",
+                "reference": "540b850b2410203e1ac21c558080871b147f1991",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.2",
-                "symfony/mailer": "^7.2|^8.0"
-            },
-            "conflict": {
-                "symfony/http-foundation": "<6.4"
+                "php": ">=8.4.1",
+                "symfony/mailer": "^7.4|^8.0"
             },
             "require-dev": {
-                "symfony/http-client": "^6.4|^7.0|^8.0",
-                "symfony/webhook": "^6.4|^7.0|^8.0"
+                "symfony/http-client": "^7.4|^8.0",
+                "symfony/webhook": "^7.4|^8.0"
             },
             "type": "symfony-mailer-bridge",
             "autoload": {
@@ -4378,7 +4375,7 @@
             "description": "Symfony Mailgun Mailer Bridge",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/mailgun-mailer/tree/v7.4.18"
+                "source": "https://github.com/symfony/mailgun-mailer/tree/v8.1.6"
             },
             "funding": [
                 {
@@ -4398,7 +4395,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-30T00:47:26+00:00"
+            "time": "2026-08-30T01:03:44+00:00"
         },
         {
             "name": "symfony/messenger",
