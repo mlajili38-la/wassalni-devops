@@ -74,6 +74,14 @@ read -r TOTAL UP DOWN PREMIER_DOWN DERNIER_DOWN < <(awk -F, 'NR>1 { n++; if ($5=
 DISPO=$(awk -v u="$UP" -v n="$TOTAL" 'BEGIN { printf "%.1f", (n ? 100*u/n : 0) }')
 DUREE_MOY=$(awk -F, 'NR>1 && $5=="UP" { s+=$4; n++ } END { printf "%.3f", (n ? s/n : 0) }' "$CSV")
 MTTD=$(( T_DETECT - T0 )); MTTR=$(( T_OK - T_DETECT )); DUREE_RB=$(( T_OK - T_RB ))
+# Indicateurs repris par le tableau de bord (scripts/dashboard.py).
+cat > "${DEPLOY_DIR}/metrics.env" <<ENV
+MTTD=${MTTD}
+MTTR=${MTTR}
+DUREE_ROLLBACK=${DUREE_RB}
+VERSION_STABLE=${STABLE}
+VERSION_DEFECTUEUSE=incident-demo
+ENV
 cat > "${DEPLOY_DIR}/incident-report.md" <<MD
 # Fiche d'incident (exercice automatise)
 

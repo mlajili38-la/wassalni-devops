@@ -22,6 +22,7 @@ on:
       - "scripts/simulate-incident.sh"
       - "scripts/rollback.sh"
       - "scripts/monitor-health.sh"
+      - "scripts/dashboard.py"
 
 # Groupe propre a l'exercice et a la branche : chaque runner est isole, pas besoin de partager
 # le groupe du deploiement (un groupe partage annulait les executions en attente).
@@ -68,6 +69,16 @@ jobs:
 
       - name: Run incident drill (deploy, incident, detection, diagnosis, rollback)
         run: scripts/incident-drill.sh "${STABLE}"
+
+      - name: Build supervision dashboard (availability, errors, response time, MTTD, MTTR)
+        if: always()
+        run: |
+          if [ -f "${DEPLOY_DIR}/monitoring.csv" ]; then
+            python3 scripts/dashboard.py "${DEPLOY_DIR}/monitoring.csv" "${DEPLOY_DIR}/dashboard.html" \
+              "${DEPLOY_DIR}/metrics.env" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Pas de donnees de supervision (monitoring.csv absent)." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Publish incident report in job summary
         if: always()
