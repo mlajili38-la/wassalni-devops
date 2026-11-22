@@ -63,6 +63,25 @@ Commandes : `docker compose ps` (colonne STATUS : `healthy` / `unhealthy` / `sta
 Indicateurs de la chaîne (section 13 de l'énoncé) : voir `docs/preuves/lot7-incident-rollback.txt` § 4
 (taux de réussite et durée des pipelines, calculés avec `gh run list`).
 
+### Tableau de bord de supervision
+
+`scripts/dashboard.py` transforme les mesures de la sonde (`monitoring.csv`) en un **tableau de bord HTML autonome**
+(sans serveur ni dépendance) :
+
+- cartes : état final, disponibilité, nombre d'erreurs 5xx, temps de réponse moyen ;
+- frise de l'état du service seconde par seconde (vert UP, rouge DOWN) ;
+- courbe du temps de réponse de `/health`, mesures en échec en rouge ;
+- tableau des indicateurs : disponibilité, période d'indisponibilité, 5xx, absences de réponse,
+  temps de réponse moyen / p95 / max, MTTD, MTTR, durée du rollback, versions concernées.
+
+Où le consulter :
+
+| Contexte | Accès |
+|---|---|
+| Chaque exercice d'incident (workflow *Incident drill and rollback*) | onglet **Summary** du run (tableau des indicateurs) et artefact `incident-drill-<run_id>` → `dashboard.html` |
+| Exercice de référence du 12/11/2026 | `docs/preuves/lot7-dashboard.html` (ouvrir dans un navigateur) |
+| En local, sur n'importe quel relevé | `python scripts/dashboard.py build/deploy/monitoring.csv build/deploy/dashboard.html` |
+
 ## 4. Procédure de diagnostic d'un incident
 
 1. **Constater** : `/health` ≠ 200, `docker compose ps` affiche `unhealthy`, ou un smoke test échoue (pipeline rouge).
