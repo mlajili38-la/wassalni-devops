@@ -62,8 +62,8 @@ class Trajet
     #[Assert\NotBlank(message: 'Veuillez sélectionner un véhicule')]
     private ?Vehicule $vehicule = null;
 
-    #[ORM\OneToMany(mappedBy: 'trajet', targetEntity: Reservation::class, cascade: ['remove'])]
     /** @var Collection<int, Reservation> */
+    #[ORM\OneToMany(mappedBy: 'trajet', targetEntity: Reservation::class, cascade: ['remove'])]
     private Collection $reservations;
 
     public function __construct()
