@@ -23,10 +23,14 @@ Rapports archivés : artefacts `security-reports-<sha>` et `image-security-repor
 | Constat | 1 alerte `generic-api-key` : `APP_SECRET` dans `.env.dev`, ligne 3, commit initial `a70e004`. |
 | Analyse | Clé utilisée **uniquement** quand `APP_ENV=dev` (poste du développeur). Elle n'est utilisée ni en test (`.env.test`), ni en CI (valeur jetable du workflow), ni dans le conteneur (`APP_SECRET` injecté au démarrage depuis `.env.docker`, non versionné). Impact : signature des jetons CSRF et des cookies « se souvenir de moi » d'une instance de développement locale. |
 | Décision | **Alerte acceptée et justifiée**, enregistrée par son empreinte exacte dans `.gitleaksignore`. L'historique n'est pas réécrit (règle du projet : pas de force push). Le contrôle reste actif : toute nouvelle fuite, y compris une nouvelle valeur dans `.env.dev`, fait échouer la CI. |
-| Remédiation | 1) **Remédiation en cours** : sur le poste du propriétaire, `APP_SECRET=` est vidé dans `.env.dev` et une nouvelle valeur, régénérée, est placée dans `.env.dev.local` (non versionné, ignoré via `/.env.*.local`) ; cette modification de `.env.dev` reste à commiter, et la version versionnée contient encore l'ancienne valeur. Chaque développeur génère la sienne. 2) Considérer l'ancienne valeur comme publique et ne jamais la réutiliser ailleurs. |
+| Remédiation | **Remédiation réalisée** (branche `fix/sec-01-app-secret`, fusionnée par PR) : 1) la valeur est retirée de `.env.dev` (`APP_SECRET=` vide dans la version versionnée) ; 2) une nouvelle clé, régénérée, est placée dans `.env.dev.local` (non versionné, ignoré via `/.env.*.local`, vérifié par `git check-ignore -v .env.dev.local`) ; chaque développeur génère la sienne (`php -r "echo bin2hex(random_bytes(16));"`) ; 3) l'ancienne valeur reste dans l'historique (non réécrit) : elle est **considérée comme compromise** (le dépôt a été temporairement public) et n'est jamais réutilisée. L'entrée de `.gitleaksignore` ne couvre que le commit initial `a70e004` : une nouvelle valeur commitée ferait échouer la CI. |
+| Vérification | `php bin/console debug:dotenv --env=dev` : `APP_SECRET` provient de `.env.dev.local`, colonne `.env.dev` vide ; `git show main:.env.dev` : `APP_SECRET=` ; CI verte, Gitleaks sans nouvelle fuite. |
 
-Autre secret signalé par le propriétaire : un **ancien mot de passe d'application Gmail**. Gitleaks ne le détecte pas dans
-l'historique publié, mais il doit être **révoqué** dans le compte Google (action du propriétaire).
+Autre secret signalé par le propriétaire : un **mot de passe d'application Gmail** (`MAILER_DSN`, stocké uniquement dans
+`.env.local`, non versionné). Gitleaks ne le détecte pas dans l'historique, mais la valeur a été exposée hors du dépôt :
+il a été **révoqué le 22/11/2026** dans le compte Google (*Mots de passe des applications*) et remplacé par un nouveau,
+placé uniquement dans `.env.local`. Règle retenue : masquer les valeurs sensibles avant de partager une sortie de
+`debug:dotenv`, de variables d'environnement ou de logs.
 
 ### SEC-02 — Vulnérabilités des dépendances PHP (composer audit, Trivy)
 
@@ -62,7 +66,7 @@ Aucune valeur secrète n'est écrite dans ce document.
 | Paramètre | Sensible | Développement (poste local, WAMP) | Test automatisé (CI `quality`) | Test conteneurisé (Compose local / CI `container`) | Où est stockée la valeur |
 |---|---|---|---|---|---|
 | `APP_ENV` / `APP_DEBUG` | non | `dev` / `1` | `test` / `1` | `prod` / `0` | `.env`, workflow, `compose.yaml` |
-| `APP_SECRET` | **oui** | `.env.dev` (SEC-01, à déplacer vers `.env.dev.local`) | valeur jetable du workflow | `.env.docker` (local) / valeur jetable (CI) | fichiers ignorés par Git ; jamais dans l'image |
+| `APP_SECRET` | **oui** | `.env.dev.local` (non versionné ; `.env.dev` ne contient qu'une valeur vide) | valeur jetable du workflow | `.env.docker` (local) / valeur jetable (CI) | fichiers ignorés par Git ; jamais dans l'image |
 | `DATABASE_URL` | **oui** (mot de passe) | `.env` : MySQL WAMP local | service MySQL jetable du job, base `wassalni_test` | construite par `compose.yaml` à partir des variables `MYSQL_*` | runtime uniquement |
 | `MYSQL_PASSWORD` / `MYSQL_ROOT_PASSWORD` | **oui** | — | valeur jetable du workflow | `.env.docker` (local) / valeur jetable (CI) | `.env.docker` ignoré par Git |
 | `MAILER_DSN` | **oui** si SMTP réel | `.env.local` (non versionné) | `null://null` (`.env`) | `null://null` (`.env`) | `.env.local` ignoré par Git |
