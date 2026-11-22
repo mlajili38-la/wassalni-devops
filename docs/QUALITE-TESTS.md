@@ -62,10 +62,22 @@ En CI, la base est un service MySQL 8.0 jetable, créé pour le job puis détrui
   - `Vehicule` : `Assert\Range(message: …)`, argument inexistant en Symfony 7 → `notInRangeMessage`.
 - Un **4e bug** du même type (`Assert\Length(message: …)` dans `User`) a été révélé par le test d'intégration de `/inscription`, puis corrigé.
 - Un **5e défaut** a été détecté par la CI (`doctrine:schema:validate`) : la relation `Trajet.vehicule` / `Vehicule.trajets` n'avait pas `inversedBy` côté `Trajet` (mapping invalide). Corrigé sans migration, car le schéma SQL ne change pas.
-- Les **58 erreurs restantes** sont gelées dans `phpstan-baseline.neon`. Ce sont surtout des écarts de typage
-  entre les propriétés nullables des entités et les colonnes `NOT NULL` (45), et des appels sur `UserInterface`
-  sans vérifier le type exact (`getUser()`). Elles ne bloquent pas le pipeline ; **toute nouvelle erreur le bloque**.
-  Objectif d'amélioration : réduire la baseline à chaque PR.
+- **58 erreurs** ont d'abord été gelées dans `phpstan-baseline.neon` : elles ne bloquent pas le pipeline,
+  mais **toute nouvelle erreur le bloque**. Objectif : réduire la baseline à chaque PR.
+
+### Réduction de la baseline : 58 → 37 erreurs (PR « réduction baseline PHPStan »)
+
+| Catégorie | Erreurs | Correction |
+|---|---|---|
+| `getUser()` renvoie `UserInterface` : appel de `getReservations()`, `getVehicules()`, `setPassager($this->getUser())`… sans vérifier le type | 8 | trait `UtilisateurConnecteTrait::utilisateurConnecte()` : vérifie une fois que l'utilisateur est un `App\Entity\User`, sinon accès refusé |
+| Collections Doctrine non typées (`Collection` au lieu de `Collection<int, Trajet>`) | 8 | annotations `@var Collection<int, …>` dans `User`, `Trajet`, `Vehicule` |
+| `LoginFormAuthenticator` : 2 dépendances injectées jamais utilisées, `isVerified()` sur `UserInterface`, `getFlashBag()` sur `SessionInterface` | 4 | dépendances supprimées, vérifications `instanceof User` et `FlashBagAwareSessionInterface` |
+| `tests/bootstrap.php` : `method_exists()` toujours vrai | 1 | appel direct de `bootEnv()` |
+
+**37 erreurs restent volontairement gelées** : toutes du type *type mapping mismatch* (une propriété d'entité
+déclarée `?string` alors que la colonne est `NOT NULL`). Les rendre non nullables obligerait à initialiser chaque
+propriété dans les constructeurs et casserait les formulaires Symfony, qui créent les entités vides avant de les remplir :
+le gain ne justifie pas ce risque sur le code métier. La règle reste : **aucune nouvelle erreur**.
 
 ## 5. Couverture
 
@@ -80,11 +92,11 @@ les tableaux de bord conducteur/passager, les avis et l'envoi d'e-mails.
 Le seuil fonctionne comme un **cliquet** : fixé environ 3 points sous la mesure, il empêche toute régression
 (du code ajouté sans test fait échouer la CI) tout en laissant une marge pour les refactorisations ; il est relevé à chaque gain de couverture.
 
-## 6. Anomalies connues (non corrigées)
+## 6. Anomalies connues
 
 | Anomalie | Impact | Décision |
 |---|---|---|
-| `UserRepository::findByRoles()` utilise `JSON_CONTAINS`, fonction inconnue de Doctrine DQL → `QueryException` | Aucun : la méthode n'est appelée nulle part | Documentée ; à supprimer ou réécrire si elle devient nécessaire |
+| `UserRepository::findByRoles()` utilisait `JSON_CONTAINS`, fonction inconnue de Doctrine DQL → `QueryException` | Aucun (méthode non appelée) | **Corrigée** : recherche du rôle dans le texte JSON (`LIKE '%"ROLE_X"%'`), couverte par le test d'intégration `testFindByRolesNeRetourneQueLesUtilisateursDuRole` |
 
 ## 7. Preuves
 

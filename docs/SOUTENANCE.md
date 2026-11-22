@@ -46,5 +46,5 @@ bash scripts/incident-drill.sh <SHA stable>
 | Comment garantir qu'aucun secret n'est dans l'image ? | `.dockerignore` exclut `.env.*`, les secrets sont injectés au démarrage, image vérifiée (seul `.env` neutre), Gitleaks sur l'historique |
 | Pourquoi ignorer des vulnérabilités (`--ignore-unfixed`) ? | aucun correctif Debian publié : non corrigeables aujourd'hui ; la CI échouera dès qu'un correctif existera ; elles restent visibles dans le rapport |
 | Que se passe-t-il si une migration casse le rollback ? | les versions publiées n'ont pas de migration incompatible ; sinon : `doctrine:migrations:migrate <version>` avant de changer d'image |
-| Pourquoi une baseline PHPStan ? | corriger 58 erreurs de typage aurait modifié le code métier ; la baseline bloque toute nouvelle erreur |
+| Pourquoi une baseline PHPStan ? | 58 erreurs à l'origine, réduites à 37 ; les restantes (entités nullables) demanderaient de modifier le code métier et les formulaires ; la baseline bloque toute nouvelle erreur |
 | Pourquoi 34 % et pas plus ? | 11,45 % → 33,92 % grâce aux tests fonctionnels ; inscription, tableaux de bord et avis restent à tester ; seuil cliquet à 30 % |

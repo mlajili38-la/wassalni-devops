@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Trajet;
 use App\Repository\TrajetRepository;
-use App\Repository\VehiculeRepository;  // ← AJOUTER CETTE LIGNE
+use App\Repository\VehiculeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/trajet')]
 class TrajetController extends AbstractController
 {
+    use UtilisateurConnecteTrait;
+
     #[Route('/recherche', name: 'trajet_search')]
     public function search(Request $request, TrajetRepository $trajetRepo): Response
     {
@@ -61,7 +63,7 @@ class TrajetController extends AbstractController
     #[IsGranted('ROLE_CONDUCTEUR')]
     public function new(Request $request, EntityManagerInterface $em, VehiculeRepository $vehiculeRepo): Response
     {
-        $user = $this->getUser();
+        $user = $this->utilisateurConnecte();
 
         // Vérifier si le conducteur a des véhicules
         $vehicules = $user->getVehicules();

@@ -45,6 +45,7 @@ class Vehicule
     private ?User $proprietaire = null;
 
     #[ORM\OneToMany(mappedBy: 'vehicule', targetEntity: Trajet::class)]
+    /** @var \Doctrine\Common\Collections\Collection<int, Trajet> */
     private \Doctrine\Common\Collections\Collection $trajets;
 
     public function __construct()

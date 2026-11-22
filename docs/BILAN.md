@@ -26,6 +26,8 @@
 | 9 | 4 CVE CRITICAL (Apache) + 2 HIGH (zlib) dans l'image | Trivy | PR #5 : durcissement du Dockerfile |
 | 10 | 9 montées de version majeure proposées par Dependabot, dont 5 cassent la CI | CI | non fusionnées ; PR #17 : majeures ignorées |
 | 11 | Tag `latest` publié dans le désordre (`latest` → `c311d47`, plus ancien que `30ba83a`) quand deux CI de `main` tournent en parallèle | lecture des preuves de l'exercice d'incident | PR #18 : publication sérialisée par branche |
+| 12 | `UserRepository::findByRoles()` en échec (`JSON_CONTAINS` inconnue de DQL) | test d'intégration | réécrite avec une recherche dans le texte JSON, test ajouté |
+| 13 | 21 erreurs de typage (utilisateur connecté non vérifié, collections non typées, dépendances inutiles) | PHPStan (baseline) | baseline réduite de 58 à 37 erreurs |
 
 ## 3. Difficultés rencontrées
 
@@ -48,11 +50,10 @@
 - **Approbation manuelle** : remplacée par le déclenchement manuel `workflow_dispatch` (pas de relecteurs obligatoires sans Pro).
 - **Environnement de test éphémère** (choix du projet) : pas d'URL permanente ; les preuves sont les runs, résumés et artefacts.
 - **Couverture de tests moyenne : 33,92 % des lignes** (11,45 % avant les tests fonctionnels). Restent peu couverts : inscription en plusieurs étapes, tableaux de bord, avis, e-mails. Seuil anti-régression relevé à 30 %.
-- **Baseline PHPStan de 58 erreurs** (typage des entités) non résorbée.
+- **Baseline PHPStan de 37 erreurs** (réduite de 58) : uniquement des propriétés d'entités nullables face à des colonnes `NOT NULL`, gelées volontairement (voir `docs/QUALITE-TESTS.md` § 4).
 - **Risque résiduel image** : 1 CRITICAL et 121 HIGH sans correctif Debian publié.
 - **Revue de code** : projet individuel, les PR sont auto-relues (description, checklist, CI), sans second relecteur.
 - `scripts/rollback.ps1` (Windows) n'a pas été rejoué ; la procédure démontrée est `scripts/rollback.sh`.
-- `UserRepository::findByRoles()` est cassée (fonction `JSON_CONTAINS` inconnue de Doctrine) ; non utilisée, documentée.
 
 ## 5. Indicateurs de suivi (au 12/11/2026)
 
