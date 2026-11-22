@@ -22,7 +22,7 @@
 | 5 | `Assert\Length(message:)` → erreur 500 sur `/inscription` | test d'intégration HTTP | PR #4 |
 | 6 | `Assert\Range(message:)` → erreur 500 à l'ajout d'un véhicule | PHPStan + test de validation | PR #4 |
 | 7 | Mapping Doctrine `Trajet.vehicule` sans `inversedBy` | CI (`doctrine:schema:validate`) | PR #4 |
-| 8 | Secret de développement versionné (SEC-01) | Gitleaks | justifié, remédiation en cours |
+| 8 | Secret de développement versionné (SEC-01) | Gitleaks | branche `fix/sec-01-app-secret` : valeur retirée de `.env.dev`, clé régénérée dans `.env.dev.local`, ancienne valeur considérée comme compromise |
 | 9 | 4 CVE CRITICAL (Apache) + 2 HIGH (zlib) dans l'image | Trivy | PR #5 : durcissement du Dockerfile |
 | 10 | 9 montées de version majeure proposées par Dependabot, dont 5 cassent la CI | CI | non fusionnées ; PR #17 : majeures ignorées |
 | 11 | Tag `latest` publié dans le désordre (`latest` → `c311d47`, plus ancien que `30ba83a`) quand deux CI de `main` tournent en parallèle | lecture des preuves de l'exercice d'incident | PR #18 : publication sérialisée par branche |
@@ -49,7 +49,6 @@
 - **Environnement de test éphémère** (choix du projet) : pas d'URL permanente ; les preuves sont les runs, résumés et artefacts.
 - **Couverture de tests faible : 11,45 % des lignes.** Les contrôleurs volumineux ne sont pas testés ; le seuil (10 %) empêche seulement la régression.
 - **Baseline PHPStan de 58 erreurs** (typage des entités) non résorbée.
-- **SEC-01** : remédiation en cours (la valeur reste dans l'historique ; le `.env.dev` vidé reste à commiter par le propriétaire).
 - **Risque résiduel image** : 1 CRITICAL et 121 HIGH sans correctif Debian publié.
 - **Revue de code** : projet individuel, les PR sont auto-relues (description, checklist, CI), sans second relecteur.
 - `scripts/rollback.ps1` (Windows) n'a pas été rejoué ; la procédure démontrée est `scripts/rollback.sh`.
