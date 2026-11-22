@@ -42,7 +42,7 @@ ensuite `MYSQL_ROOT_PASSWORD`. Ce n'est pas une faille de la configuration, mais
 
 | Niveau | Mécanisme | Ce qui est vérifié | Utilisé par |
 |---|---|---|---|
-| Application | `GET /health` (`HealthController`) | Symfony répond **et** MySQL répond (`SELECT 1`) : `200 {"status":"ok"}` sinon `503 {"status":"unavailable"}` + log `error` | smoke tests, sonde de supervision |
+| Application | `GET /health` (`HealthController`) | Symfony répond **et** MySQL répond (`SELECT 1`) : `200 {"status":"ok","version":"<sha>"}` sinon `503 {"status":"unavailable","version":"<sha>"}` + log `error` (la version en service est visible même pendant un incident) | smoke tests, sonde de supervision |
 | Conteneur `app` | `HEALTHCHECK` du Dockerfile et `healthcheck` Compose (`curl -fsS http://localhost/health`, toutes les 10 s, 5 essais, 60 s de démarrage) | même chose, du point de vue de Docker | `docker compose up --wait`, `docker compose ps` |
 | Conteneur `database` | `mysqladmin ping` en TCP | MySQL accepte les connexions (pas pendant l'initialisation) | `depends_on: condition: service_healthy` |
 

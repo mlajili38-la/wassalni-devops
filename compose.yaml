@@ -2,13 +2,15 @@ services:
   app:
     build:
       context: .
+      args:
+        # SHA du commit fixe dans l'image (ENV APP_VERSION), expose par /health.
+        APP_VERSION: ${APP_VERSION:-local}
     image: ${DOCKER_IMAGE:-wassalni}:${APP_VERSION:-local}
     restart: unless-stopped
     # Toutes les valeurs sensibles sont injectees au runtime (jamais dans l'image).
     environment:
       APP_ENV: prod
       APP_DEBUG: "0"
-      APP_VERSION: ${APP_VERSION:-local}
       APP_SECRET: ${APP_SECRET:?Set APP_SECRET in .env.docker}
       DATABASE_URL: "mysql://${MYSQL_USER:-wassalni}:${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env.docker}@database:3306/${MYSQL_DATABASE:-wassalni}?serverVersion=8.0.32&charset=utf8mb4"
     depends_on:

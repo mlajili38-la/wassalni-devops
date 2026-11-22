@@ -26,7 +26,7 @@ docker compose --env-file .env.docker up --build -d --wait
 Invoke-WebRequest http://localhost:8080/health
 ```
 
-Le point de contrôle répond `200 {"status":"ok"}` lorsque l'application et MySQL sont disponibles, et `503` si la base ne répond pas. Les mots de passe employés dans une URL MySQL doivent être encodés en URL ; utiliser de préférence un mot de passe composé de caractères URL sûrs dans cet environnement local.
+Le point de contrôle répond `200 {"status":"ok","version":"<sha>"}` lorsque l'application et MySQL sont disponibles, et `503` si la base ne répond pas. Les mots de passe employés dans une URL MySQL doivent être encodés en URL ; utiliser de préférence un mot de passe composé de caractères URL sûrs dans cet environnement local.
 
 Au démarrage, le conteneur `app` (script `docker/entrypoint.sh`) attend que MySQL réponde, applique les migrations Doctrine (`doctrine:migrations:migrate`, sans effet si la base est déjà à jour) puis lance Apache. Les secrets (`APP_SECRET`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`) sont injectés uniquement au runtime depuis `.env.docker` : l'image n'en contient aucun. Mettre `RUN_MIGRATIONS=0` pour désactiver les migrations automatiques.
 

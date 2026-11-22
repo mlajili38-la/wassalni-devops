@@ -40,7 +40,7 @@ explicitement la version à déployer. Avec GitHub Pro, il suffirait d'ajouter `
 | 2 | Démarrage Compose (`--no-build --wait`) | `compose.yaml`, secrets | durée de démarrage | un service n'est pas `healthy` en 180 s |
 | 3 | État des conteneurs | `docker inspect` | tableau `app` / `database` | un conteneur n'est pas `healthy` |
 | 4 | Migrations Doctrine | conteneur `app` | `Up-to-date`, `schema in sync`, version courante | migration manquante ou schéma désynchronisé |
-| 5 | Health check | `GET /health` | `200 {"status":"ok"}` (vérifie MySQL) | code ≠ 200 |
+| 5 | Health check | `GET /health` | `200 {"status":"ok","version":"<sha>"}` (vérifie MySQL) ; la version doit être égale à la révision de l'image | code ≠ 200 ou version différente |
 | 6 | Smoke tests (`scripts/smoke-test.sh`) | URL de base | code HTTP et durée par page | une page ne renvoie pas le code attendu |
 | 7 | Trace de la version | — | `deployment-record.json` (image, digest, révision, date, auteur, lien du run) | — |
 

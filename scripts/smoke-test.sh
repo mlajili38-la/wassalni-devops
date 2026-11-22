@@ -19,9 +19,11 @@ verifier() { # $1 = chemin, $2 = code HTTP attendu
     fi
 }
 
-# Sonde de sante : HTTP 200 ET corps {"status":"ok"} (verifie la connexion a MySQL).
+# Sonde de sante : HTTP 200 ET statut "ok" dans le corps (verifie la connexion a MySQL).
+# Le corps contient aussi la version en service ({"status":"ok","version":"<sha>"}) ;
+# les images anterieures repondent {"status":"ok"} : le test reste compatible pour un rollback.
 corps=$(curl -s --max-time 10 "${BASE_URL}/health")
-if [ "$corps" = '{"status":"ok"}' ]; then
+if printf '%s' "$corps" | grep -q '"status":"ok"'; then
     echo "OK    /health                  corps ${corps}"
 else
     echo "ECHEC /health                  corps '${corps}'"

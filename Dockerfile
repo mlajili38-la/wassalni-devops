@@ -4,6 +4,9 @@ ARG APP_VERSION=dev
 
 LABEL org.opencontainers.image.revision="${APP_VERSION}"
 
+# Version figee dans l'image : /health l'expose, quel que soit le tag utilise (SHA, latest) au deploiement.
+ENV APP_VERSION="${APP_VERSION}"
+
 # Securite (Lot 5, voir docs/SECURITE.md) :
 # - apt-get upgrade : applique les correctifs Debian publies (ex. Apache CVE CRITICAL, zlib HIGH) ;
 # - les outils de compilation ($PHPIZE_DEPS, paquets -dev) ne servent qu'a compiler les extensions :
