@@ -15,6 +15,7 @@ echo "=== Construction de la version defectueuse ${DOCKER_IMAGE}:incident-demo (
 docker build -q -t "${DOCKER_IMAGE}:incident-demo" - <<DOCKERFILE
 FROM ${DOCKER_IMAGE}:${BASE}
 LABEL org.opencontainers.image.revision="incident-demo"
+ENV APP_VERSION="incident-demo"
 RUN sed -i "s/executeQuery('SELECT 1')/executeQuery('SELECT 1 FROM table_inexistante_incident')/" src/Controller/HealthController.php \
  && grep -q table_inexistante_incident src/Controller/HealthController.php
 DOCKERFILE

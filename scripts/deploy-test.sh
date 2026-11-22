@@ -53,6 +53,16 @@ etape "5. Sonde de sante (health check)"
 code=$(curl -s -o "${DEPLOY_DIR}/health.json" -w '%{http_code}' "${BASE_URL}/health")
 echo "GET /health -> HTTP ${code} $(cat "${DEPLOY_DIR}/health.json")"
 [ "$code" = "200" ] || { echo "ERREUR : health check en echec"; exit 1; }
+# Trace de la version : /health doit annoncer la revision de l'image deployee.
+# Les images publiees avant l'ajout de ce champ ne l'exposent pas (cas d'un rollback ancien) : simple avertissement.
+version_sante=$(sed -n 's/.*"version":"\([^"]*\)".*/\1/p' "${DEPLOY_DIR}/health.json")
+if [ -z "$version_sante" ]; then
+    echo "AVERTISSEMENT : /health n'expose pas de version (image anterieure a cette fonctionnalite)"
+elif [ "$version_sante" != "$REVISION" ]; then
+    echo "ERREUR : /health annonce la version ${version_sante}, l'image deployee est ${REVISION}"; exit 1
+else
+    echo "version en service : ${version_sante} (identique a la revision de l'image)"
+fi
 
 etape "6. Smoke tests"
 scripts/smoke-test.sh "$BASE_URL" | tee "${DEPLOY_DIR}/smoke-tests.txt"

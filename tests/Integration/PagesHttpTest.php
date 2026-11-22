@@ -16,7 +16,7 @@ class PagesHttpTest extends WebTestCase
         $client->request('GET', '/health');
 
         self::assertResponseIsSuccessful();
-        self::assertJsonStringEqualsJsonString('{"status":"ok"}', (string) $client->getResponse()->getContent());
+        self::assertJsonStringEqualsJsonString('{"status":"ok","version":"local"}', (string) $client->getResponse()->getContent());
     }
 
     #[DataProvider('pagesPubliques')]
