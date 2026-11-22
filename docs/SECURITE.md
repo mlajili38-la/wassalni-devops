@@ -49,6 +49,10 @@ Actions correctives (`Dockerfile`) :
 1. `apt-get upgrade` au build : Apache `2.4.69` → `2.4.71` (CVE CRITICAL corrigée) et zlib `deb13u1` (2 HIGH corrigées) ;
 2. suppression des outils de compilation (`gcc`, `g++`, `make`, `autoconf`, en-têtes `-dev`, `linux-libc-dev`) après la compilation des extensions PHP : **190 → 132 paquets** dans l'image, surface d'attaque réduite ;
 3. `docker build --pull` en CI : l'image de base est toujours la plus récente.
+4. **construction en plusieurs étapes** (*multi-stage build*, étapes `base`, `build`, `runtime`) : Composer, `unzip`
+   et les fichiers de construction restent dans l'étape `build` ; l'image publiée ne contient que PHP, Apache,
+   le code, `vendor/` (sans dépendances de développement) et les assets compilés. Le code appartient à `root`
+   (lecture seule pour Apache), seul `var/` est modifiable par `www-data`.
 
 Vérification fonctionnelle après durcissement : extensions `intl` et `pdo_mysql` présentes, stack Compose `healthy`,
 migrations appliquées, `/health`, `/`, `/connexion`, `/inscription`, `/inscription/etape/1` → HTTP 200.
