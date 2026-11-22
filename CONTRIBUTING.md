@@ -50,7 +50,7 @@ git push -u origin feat/mon-sujet
 ```
 
 5. Ouvrir une PR vers `main` sur GitHub et remplir le modèle proposé.
-6. Attendre que la CI soit **verte** (jobs `quality` et `container`).
+6. Attendre que la CI soit **verte** (jobs `quality`, `security` et `container`).
 7. Faire relire la PR (revue), corriger si besoin par de nouveaux commits sur la même branche.
 8. Fusionner avec **« Create a merge commit »**, puis supprimer la branche.
 
