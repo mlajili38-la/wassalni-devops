@@ -52,20 +52,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $dateInscription = null;
 
-    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Trajet::class)]
     /** @var Collection<int, Trajet> */
+    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Trajet::class)]
     private Collection $trajets;
 
-    #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Reservation::class)]
     /** @var Collection<int, Reservation> */
+    #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Reservation::class)]
     private Collection $reservations;
 
-    #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Vehicule::class)]
     /** @var Collection<int, Vehicule> */
+    #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Vehicule::class)]
     private Collection $vehicules;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Reclamation::class)]
     /** @var Collection<int, Reclamation> */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Reclamation::class)]
     private Collection $reclamations;
 
     public function __construct()
@@ -383,12 +383,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->verificationToken = bin2hex(random_bytes(32));
         $this->verificationTokenExpiresAt = new \DateTime('+24 hours');
     }
-    #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Avis::class)]
     /** @var Collection<int, Avis> */
+    #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Avis::class)]
     private Collection $avisDonnes;
 
-    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Avis::class)]
     /** @var Collection<int, Avis> */
+    #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Avis::class)]
     private Collection $avisRecus;
 
     public function getAvisDonnes(): Collection

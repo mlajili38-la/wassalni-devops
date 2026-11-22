@@ -133,12 +133,6 @@ parameters:
 			path: src/Entity/Trajet.php
 
 		-
-			message: '#^Property App\\Entity\\Trajet\:\:\$reservations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reservation\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Trajet.php
-
-		-
 			message: '#^Property App\\Entity\\Trajet\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -155,18 +149,6 @@ parameters:
 			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/Trajet.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$avisDonnes type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Avis\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$avisRecus type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Avis\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/User.php
 
 		-
 			message: '#^Property App\\Entity\\User\:\:\$email type mapping mismatch\: property can contain string\|null but database expects string\.$#'
@@ -193,18 +175,6 @@ parameters:
 			path: src/Entity/User.php
 
 		-
-			message: '#^Property App\\Entity\\User\:\:\$reclamations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reclamation\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$reservations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Reservation\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/User.php
-
-		-
 			message: '#^Property App\\Entity\\User\:\:\$statut type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
 			count: 1
@@ -213,18 +183,6 @@ parameters:
 		-
 			message: '#^Property App\\Entity\\User\:\:\$telephone type mapping mismatch\: property can contain string\|null but database expects string\.$#'
 			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$trajets type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Trajet\>\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/User.php
-
-		-
-			message: '#^Property App\\Entity\\User\:\:\$vehicules type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Vehicule\>\.$#'
-			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/User.php
 
@@ -260,12 +218,6 @@ parameters:
 
 		-
 			message: '#^Property App\\Entity\\Vehicule\:\:\$proprietaire type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/Vehicule.php
-
-		-
-			message: '#^Property App\\Entity\\Vehicule\:\:\$trajets type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Trajet\>\.$#'
 			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/Vehicule.php
