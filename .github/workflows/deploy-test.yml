@@ -21,6 +21,11 @@ on:
         description: "Tag GHCR a deployer (SHA complet du commit). Vide = latest."
         required: false
         default: ""
+      simuler_echec:
+        description: "Demonstration : mettre en service une version defectueuse apres le deploiement (declenche le rollback automatique)"
+        type: boolean
+        required: false
+        default: false
   pull_request:
     branches: [main]
     paths:
@@ -38,7 +43,8 @@ concurrency:
 
 permissions:
   contents: read
-  packages: read
+  # write : promotion de la version validee en tag "stable" (reference du rollback automatique).
+  packages: write
 
 jobs:
   deploy:
@@ -87,7 +93,41 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
 
       - name: Deploy, verify containers, migrations, health check and smoke tests
-        run: scripts/deploy-test.sh "${VERSION}"
+        id: deploy
+        env:
+          SIMULER_ECHEC: ${{ inputs.simuler_echec }}
+        run: |
+          scripts/deploy-test.sh "${VERSION}"
+          if [ "${SIMULER_ECHEC}" = "true" ]; then
+            echo "::warning::Demonstration : mise en service d'une version defectueuse (scripts/simulate-incident.sh)"
+            scripts/simulate-incident.sh "${VERSION}"
+            sleep 10
+            scripts/smoke-test.sh "http://localhost:${APP_PORT}"
+          fi
+
+      # Rollback automatique : si le deploiement ou ses verifications echouent, la derniere version validee
+      # (tag GHCR "stable") est remise en service et verifiee. Le job reste en echec : la nouvelle version
+      # n'est pas livrable, mais le service est retabli.
+      - name: Automatic rollback to the last stable version
+        if: failure() && steps.deploy.outcome == 'failure'
+        run: |
+          if ! docker pull -q "${DOCKER_IMAGE}:stable"; then
+            echo "::error::Aucune version stable (tag :stable) dans GHCR : rollback automatique impossible"
+            exit 1
+          fi
+          stable=$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "${DOCKER_IMAGE}:stable")
+          echo "STABLE=${stable}" >> "$GITHUB_ENV"
+          echo "::warning::Echec du deploiement de ${VERSION} : rollback automatique vers ${stable}"
+          scripts/rollback.sh "${stable}"
+
+      # Promotion : une version deployee ET verifiee devient la reference "stable" du rollback.
+      # Pas sur une pull_request (la version testee n'est pas encore fusionnee).
+      - name: Promote deployed version as stable
+        if: success() && github.event_name != 'pull_request'
+        run: |
+          docker tag "${DOCKER_IMAGE}:${VERSION}" "${DOCKER_IMAGE}:stable"
+          docker push -q "${DOCKER_IMAGE}:stable"
+          echo "Version stable : ${DOCKER_IMAGE}:${VERSION} -> ${DOCKER_IMAGE}:stable"
 
       - name: Record deployed version in job summary
         if: always()
@@ -102,6 +142,10 @@ jobs:
             fi
             if [ -f "${DEPLOY_DIR}/smoke-tests.txt" ]; then
               echo '### Smoke tests'; echo '```'; cat "${DEPLOY_DIR}/smoke-tests.txt"; echo '```'
+            fi
+            if [ -f "${DEPLOY_DIR}/rollback-record.json" ]; then
+              echo "### Rollback automatique vers la version stable \`${STABLE:-?}\`"
+              echo '```json'; cat "${DEPLOY_DIR}/rollback-record.json"; echo '```'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
