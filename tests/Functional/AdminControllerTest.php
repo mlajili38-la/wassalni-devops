@@ -63,10 +63,14 @@ class AdminControllerTest extends FunctionalTestCase
 
         $this->client->request('GET', '/admin/utilisateur/bloquer/'.$passager->getId());
         self::assertResponseRedirects('/admin/utilisateurs');
-        self::assertSame('BLOQUE', $this->relire(User::class, $passager->getId())?->getStatut());
+        $bloque = $this->relire(User::class, $passager->getId());
+        self::assertNotNull($bloque);
+        self::assertSame('BLOQUE', $bloque->getStatut());
 
         $this->client->request('GET', '/admin/utilisateur/activer/'.$passager->getId());
-        self::assertSame('ACTIF', $this->relire(User::class, $passager->getId())?->getStatut());
+        $reactive = $this->relire(User::class, $passager->getId());
+        self::assertNotNull($reactive);
+        self::assertSame('ACTIF', $reactive->getStatut());
     }
 
     public function testAdminTraiteUneReclamationAvecUneReponse(): void
@@ -83,9 +87,10 @@ class AdminControllerTest extends FunctionalTestCase
 
         self::assertResponseRedirects('/admin/reclamations');
         $traitee = $this->relire(Reclamation::class, $reclamation->getId());
-        self::assertSame('TRAITEE', $traitee?->getStatut());
-        self::assertSame('Le conducteur a ete averti.', $traitee?->getReponse());
-        self::assertNotNull($traitee?->getDateTraitement());
+        self::assertNotNull($traitee);
+        self::assertSame('TRAITEE', $traitee->getStatut());
+        self::assertSame('Le conducteur a ete averti.', $traitee->getReponse());
+        self::assertNotNull($traitee->getDateTraitement());
     }
 
     public function testReclamationSansReponseResteEnAttente(): void
