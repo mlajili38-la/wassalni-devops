@@ -22,7 +22,8 @@ env:
   # Miroir officiel de la base Trivy (evite les limites de telechargement de ghcr.io).
   TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
   # Quality gate : couverture minimale des lignes (en %), voir scripts/check-coverage.php.
-  COVERAGE_MIN: "10"
+  # Cliquet anti-regression : couverture mesuree 33,92 % (PR tests fonctionnels), seuil fixe 3 points en dessous.
+  COVERAGE_MIN: "30"
 
 jobs:
   quality:

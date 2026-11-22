@@ -16,7 +16,7 @@ Chaque étape est **bloquante** : si elle échoue, le job échoue, le job `conta
 | 5 | Audit dependencies | `composer audit` | vulnérabilité connue dans une dépendance |
 | 6 | Prepare test database | migrations Doctrine sur MySQL 8.0 | migration invalide ou schéma désynchronisé |
 | 7 | Run tests with coverage | PHPUnit 12 + PCOV | un test échoue |
-| 8 | Coverage quality gate | `scripts/check-coverage.php` | couverture des lignes < `COVERAGE_MIN` (10 %) |
+| 8 | Coverage quality gate | `scripts/check-coverage.php` | couverture des lignes < `COVERAGE_MIN` (30 %) |
 
 Rapports archivés (artefact **`test-reports-<sha>`** de chaque exécution) :
 `junit.xml` (résultats), `testdox.txt` (lisible), `clover.xml` (couverture), `coverage-html/` (rapport navigable).
@@ -45,6 +45,7 @@ $env:XDEBUG_MODE = "coverage"; vendor/bin/phpunit --coverage-html build/reports/
 |---|---|---|---|
 | `unit` | `tests/Controller`, `tests/Service` | aucune (stubs/mocks) | `ReservationService` (7 cas), `HealthController` |
 | `integration` | `tests/Integration` | **MySQL `wassalni_test`** | réservation et annulation réelles, double réservation refusée par une vraie requête, unicité de l'email, contraintes de validation, requêtes HTTP (`/health`, pages publiques, redirection d'une page protégée) |
+| `integration` (fonctionnels) | `tests/Functional` | **MySQL `wassalni_test`** | 36 cas HTTP avec **utilisateur connecté** (`loginUser`) : contrôle d'accès par rôle (anonyme, passager, conducteur, admin), réservation HTML et API JSON (places, prix, annulation, réservation d'un autre refusée), recherche et publication de trajets, actions d'administration, confidentialité des réclamations, véhicules (propriétaire, jeton CSRF) |
 
 **Base de test distincte** : en environnement `test`, `config/packages/doctrine.yaml` ajoute le suffixe `_test`
 au nom de la base. Les tests n'utilisent donc jamais la base de développement ; un garde-fou dans `DatabaseTestCase` fait échouer le test si la base ne se termine pas par `_test`. Chaque test d'intégration
@@ -68,11 +69,16 @@ En CI, la base est un service MySQL 8.0 jetable, créé pour le job puis détrui
 
 ## 5. Couverture
 
-Couverture actuelle : **11,45 % des lignes** (163/1424), 25,8 % des méthodes.
-Elle est faible parce que les contrôleurs volumineux (administration, trajets, tableaux de bord) n'ont pas de tests.
-Le service métier `ReservationService` et le health check sont couverts.
-Le seuil `COVERAGE_MIN` est fixé à **10 %** pour **empêcher toute régression** ; il est à relever au fur et
-à mesure de l'ajout de tests (prochaine cible : tests HTTP authentifiés des contrôleurs de réservation).
+| Mesure | Lignes couvertes | Seuil `COVERAGE_MIN` |
+|---|---|---|
+| Avant les tests fonctionnels | **11,45 %** (163/1424) | 10 % |
+| Après les tests fonctionnels (36 cas, PR « tests fonctionnels ») | **33,92 %** (483/1424) | **30 %** |
+
+Les tests fonctionnels couvrent les contrôleurs de réservation, de trajets, d'administration, de réclamations
+et de véhicules avec un utilisateur connecté. Restent peu couverts : l'inscription en plusieurs étapes,
+les tableaux de bord conducteur/passager, les avis et l'envoi d'e-mails.
+Le seuil fonctionne comme un **cliquet** : fixé environ 3 points sous la mesure, il empêche toute régression
+(du code ajouté sans test fait échouer la CI) tout en laissant une marge pour les refactorisations ; il est relevé à chaque gain de couverture.
 
 ## 6. Anomalies connues (non corrigées)
 
