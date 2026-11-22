@@ -17,7 +17,8 @@ Captures du 22/11/2026. Règle : **aucun secret visible** (valeurs de `.env*`, m
 | 9 | `09-smoke-tests-ci.png` | Summary CI : smoke tests de l'image, `/health` annonce le SHA construit | Lot 6 / étape 21 |
 | 10 | `10-deploy-test.png` | Summary *Deploy test* : image, digest, révision, `health` avec la version | Lot 6 / étape 21 |
 | 11 | `11-promotion-stable.png` | étape *Promote deployed version as stable* (rollback automatique ignoré car succès) | Lot 6 |
-| 12 | `12-rollback-automatique.png` | *Deploy test* avec `simuler_echec` : section « Rollback automatique vers la version stable » | Lot 7 / étape 23 |
+| 12 | `12-rollback-automatique.png` | *Deploy test* #34 (`simuler_echec`) : rollback automatique vers `stable` réussi, run en échec volontaire, annotations | Lot 7 / étape 23 |
+| 12a | `12a-rollback-smoke-tests.png` | même run : déploiement et smoke tests OK, puis section rollback | Lot 7 |
 | 13 | `13-tableau-de-bord.png` | tableau de bord de supervision (exercice de référence, `lot7-dashboard.html`) | Lot 7 / étape 23 |
 | 14 | `14-fiche-incident.png` | Summary *Incident drill* : fiche d'incident (versions, détection, diagnostic) | Lot 7 / étape 23 |
 | 14a | `14a-indicateurs-incident.png` | Summary *Incident drill* : indicateurs (disponibilité, 5xx, MTTD 4 s, MTTR 24 s) | Lot 7 |
