@@ -56,7 +56,7 @@ Exécutant / date :
 
 ## 6.4 Régression minimale
 
-Après chaque correction concernant réservation, réexécuter CT-10 à CT-17 et CT-24 à CT-28 selon la surface touchée. Après correction des rôles/propriétaires, réexécuter CT-01 à CT-04, CT-16 et CT-21. Après correction des réclamations, réexécuter CT-18 à CT-23. Toute régression doit cibler la même révision candidate de livraison.
+Après chaque correction concernant réservation, réexécuter CT-10 à CT-17 et CT-24 à CT-28 selon la surface touchée. Après correction des rôles/propriétaires, réexécuter CT-01 à CT-04, CT-16 et CT-21. Après correction des réclamations, réexécuter CT-18 à CT-23 et CT-32 à CT-35. Toute régression doit cibler la même révision candidate de livraison.
 
 ## 6.5 Bilan de campagne et décision
 
@@ -64,12 +64,12 @@ Après chaque correction concernant réservation, réexécuter CT-10 à CT-17 et
 
 | Mesure | État |
 |---|---|
-| Cas spécifiés | 31 dans le catalogue |
+| Cas spécifiés | 35 dans le catalogue |
 | Tests unitaires observés | 7 dans `ReservationServiceTest.php` |
 | Tests exécutés avec preuve disponible | 0 dans cette campagne |
 | Cas échoués confirmés | Aucun; l'absence d'exécution empêche de conclure |
 | Anomalies confirmées | Aucune par exécution dans cette campagne |
-| Observations à reproduire | OBS-01 à OBS-05 |
+| Observations à reproduire | OBS-01 à OBS-05; brouillons réclamation ANO-01 à ANO-03 |
 | Exigences ambiguës bloquantes | Délai d'annulation, statuts de réclamation, contrat API, bornes de données |
 
 ### Décision argumentée

@@ -60,6 +60,10 @@ Pour tous les cas, enregistrer : version/SHA, environnement, date, exécutant, r
 | CT-21 | `RECLAMATION_A` appartient à `PASSAGER_A`; session `PASSAGER_B` | Tenter d'ouvrir son URL de détail | Refus d'accès; aucune information de la réclamation n'est révélée |
 | CT-22 | Session `ADMIN_A` et `RECLAMATION_A` en attente | Répondre avec un texte valide puis rouvrir la réclamation | Réponse persistée, statut traité, date de traitement cohérente |
 | CT-23 | Réclamation en attente | Examiner les actions disponibles et tenter le passage par `EN_COURS` | Résultat attendu uniquement après arbitrage de EX-11; à défaut, marquer Bloqué |
+| CT-32 | `RECLAMATION_A` en attente; sessions `PASSAGER_A` et `CONDUCTEUR_A` | Envoyer directement une requête de traitement avec une réponse valide vers `/admin/reclamation/traiter/{id}` | Accès refusé aux deux rôles; statut, réponse et date de traitement inchangés |
+| CT-33 | `RECLAMATION_A` en attente; session `ADMIN_A` | Soumettre une réponse composée uniquement d'espaces | Requête refusée comme réponse vide; aucun changement d'état ni de date |
+| CT-34 | `RECLAMATION_A` déjà traitée avec une réponse et une date connues; session `ADMIN_A` | Renvoyer une deuxième réponse à la route de traitement | Si `TRAITEE` est terminal selon la règle approuvée, transition refusée et données initiales préservées; sinon appliquer la règle décidée |
+| CT-35 | Réclamation traitée et session `PASSAGER_B` | Ouvrir directement la page de détail puis la liste personnelle de `PASSAGER_A` | Détail refusé sans fuite; la liste ne contient que les réclamations du compte connecté |
 
 ### Persistance et surface JSON
 
@@ -83,9 +87,9 @@ Pour tous les cas, enregistrer : version/SHA, environnement, date, exécutant, r
 
 1. CT-01 à CT-04 (rôles et confidentialité).
 2. CT-10 à CT-17 (intégrité du stock et cycle de réservation).
-3. CT-18 à CT-23 (propriété et traitement des réclamations).
+3. CT-18 à CT-23 et CT-32 à CT-35 (propriété, transitions et droits des réclamations).
 4. CT-05 à CT-09 (trajets/recherche).
 5. CT-24 à CT-28 (persistance et JSON).
 6. CT-29 à CT-31 (interface et non fonctionnel).
 
-Les cas CT-17, CT-23 et CT-31 sont bloqués tant que leur règle/seuil n'est pas défini.
+Les cas CT-17, CT-23, CT-31 et la décision d'oracle de CT-34 sont bloqués tant que leur règle/seuil n'est pas défini.
