@@ -49,9 +49,10 @@ au premier échec, le job s'arrête en rouge et les jobs qui en dépendent ne s'
 | Build versioned image (`--pull`) | `Dockerfile`, code | image `wassalni-ci:<sha>`, label `revision` | build en erreur |
 | Trivy (rapport complet) | image | `trivy-image.json`, `trivy-image.txt` | — (rapport) |
 | Trivy (règle) | image | log | HIGH/CRITICAL **avec correctif** |
-| Deploy to ephemeral environment | image, `compose.yaml` | stack `app` + `database` healthy | service non healthy, `/health` ≠ 200 |
+| Deploy to ephemeral environment | image, `compose.yaml` | stack `app` + `database` healthy (healthchecks Docker) | service non healthy |
 | Verify database migrations | conteneur `app` | `Up-to-date`, schéma synchronisé | migration manquante |
-| Smoke test main pages | URL locale | codes HTTP | une page ≠ 200 |
+| Health check and version | `GET /health` | corps JSON | code ≠ 200 ou version ≠ SHA du commit construit |
+| Smoke tests (`scripts/smoke-test.sh`) | URL locale | une ligne par page (code, durée) + résumé du job | une page ne renvoie pas le code attendu (200, 302 pour une page protégée, 404 pour une page inexistante) |
 | Container logs on failure | — | logs `app`/`database` | (seulement en cas d'échec) |
 | Publish to GHCR (**push sur `main` uniquement**) | image | `ghcr.io/<dépôt>:<sha>` et `:latest` | authentification ou push refusé |
 | Stop environment | — | — | — |

@@ -209,21 +209,36 @@ jobs:
         run: |
           APP_VERSION="${GITHUB_SHA}" DOCKER_IMAGE=wassalni-ci \
             docker compose up -d --wait --no-build
-          curl --fail --retry 10 --retry-connrefused --retry-delay 2 \
-            http://localhost:8080/health
 
       - name: Verify database migrations
         run: |
           docker compose exec -T app php bin/console doctrine:migrations:up-to-date --env=prod
           docker compose exec -T app php bin/console doctrine:schema:validate --skip-mapping --env=prod
 
-      - name: Smoke test main pages
+      - name: Health check and version of the built image
+        # /health doit repondre 200 ET annoncer le SHA du commit construit (version figee dans l'image).
         run: |
-          for path in /health / /connexion /inscription/etape/1; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8080${path}")
-            echo "${path} -> HTTP ${code}"
-            test "${code}" = "200"
-          done
+          corps=$(curl --fail --silent --show-error --retry 10 --retry-connrefused --retry-delay 2 \
+            http://localhost:8080/health)
+          echo "GET /health -> ${corps}"
+          if ! printf '%s' "${corps}" | grep -q "\"version\":\"${GITHUB_SHA}\""; then
+            echo "::error::/health n'annonce pas la version ${GITHUB_SHA}"
+            exit 1
+          fi
+
+      - name: Smoke tests (same script as the Deploy test workflow)
+        # Un seul script de smoke tests pour la CI, le deploiement en test et le rollback : scripts/smoke-test.sh.
+        # shell: bash active pipefail : un echec du script n'est pas masque par "tee".
+        shell: bash
+        run: |
+          mkdir -p build/deploy
+          scripts/smoke-test.sh http://localhost:8080 | tee build/deploy/smoke-tests-ci.txt
+          {
+            echo "## Smoke tests de l'image wassalni-ci:${GITHUB_SHA}"
+            echo '```'
+            cat build/deploy/smoke-tests-ci.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Show container logs on failure
         if: failure()
