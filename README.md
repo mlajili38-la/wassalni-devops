@@ -25,9 +25,10 @@ Commit / PR ─► CI (qualité + tests ∥ sécurité) ─► Build image ─�
 | Déploiement en environnement de test | [docs/DEPLOIEMENT.md](docs/DEPLOIEMENT.md) |
 | Supervision, logs, incident, rollback | [docs/SUPERVISION.md](docs/SUPERVISION.md) |
 | Bilan, difficultés, améliorations, indicateurs | [docs/BILAN.md](docs/BILAN.md) |
+| Indicateurs de la chaîne (calculés) | [docs/preuves/indicateurs-chaine.md](docs/preuves/indicateurs-chaine.md) |
 | Fiche synthétique de remise | [docs/FICHE-REMISE.md](docs/FICHE-REMISE.md) |
 | Plan de soutenance et scénario de démonstration | [docs/SOUTENANCE.md](docs/SOUTENANCE.md) |
-| Preuves d'exécution | [docs/preuves/](docs/preuves/) |
+| Preuves d'exécution | [docs/preuves/](docs/preuves/) — captures : [docs/preuves/captures/](docs/preuves/captures/) |
 
 ## Démarrage rapide (Docker Desktop, PowerShell)
 
@@ -42,6 +43,16 @@ Invoke-WebRequest http://localhost:8080/health  # 200 {"status":"ok"}
 | Workflow | Fichier | Déclencheurs |
 |---|---|---|
 | CI | `.github/workflows/ci.yml` | push sur `main`, PR vers `main` |
-| Deploy test | `.github/workflows/deploy-test.yml` | après une CI verte sur `main`, manuel, PR (fichiers de déploiement) |
+| Deploy test | `.github/workflows/deploy-test.yml` | après une CI verte sur `main`, manuel (version au choix, option `simuler_echec`), PR (fichiers de déploiement) |
 | Incident drill and rollback | `.github/workflows/incident-rollback.yml` | manuel, PR (scripts d'exploitation) |
-| Dependabot | `.github/dependabot.yml` | hebdomadaire |
+| Dependabot | `.github/dependabot.yml` | hebdomadaire (Composer, Docker, GitHub Actions) |
+
+## Chiffres clés (22/11/2026)
+
+| | |
+|---|---|
+| Tests | 59 (36 fonctionnels avec utilisateur connecté), couverture 34,43 %, seuil bloquant 30 % |
+| Analyse statique | PHPStan niveau 5, baseline 37 erreurs (58 au départ), aucune nouvelle erreur tolérée |
+| Sécurité | 0 vulnérabilité Composer, 0 HIGH/CRITICAL corrigeable dans l'image, aucun secret versionné |
+| Livraison | 25 PR fusionnées, 17 déploiements en test, 0 échec de déploiement, CI 100 % verte sur `main` |
+| Exploitation | rollback automatique vers `stable`, MTTD 4 s, MTTR 24 s |
