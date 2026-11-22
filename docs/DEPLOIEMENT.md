@@ -50,6 +50,22 @@ Pages vérifiées par les smoke tests : `/health` (code + corps), `/`, `/connexi
 Trace de la version déployée : résumé du job (onglet **Summary** du run) et artefact `deploy-test-<run_id>`
 (`deployment-record.json`, `smoke-tests.txt`, `health.json`, `containers.txt`, `app.log`, `database.log`).
 
+## 3 bis. Version stable et rollback automatique
+
+| Situation | Action du workflow *Deploy test* |
+|---|---|
+| Déploiement et vérifications **réussis** (hors pull request) | l'image déployée est promue : tag GHCR **`stable`** |
+| Une vérification **échoue** (conteneur, migrations, `/health`, smoke tests) | **rollback automatique** : `scripts/rollback.sh` remet en service l'image `stable` et la vérifie ; le job reste **en échec** (la nouvelle version n'est pas livrable) mais le service est rétabli |
+| Aucun tag `stable` (tout premier déploiement) | rollback impossible, signalé par une erreur explicite |
+
+Le tag `stable` désigne toujours la **dernière version déployée et vérifiée** ; `latest` désigne la dernière version
+**construite**. Les deux peuvent différer : c'est précisément ce qui rend le rollback sûr.
+
+Démonstration : *Actions* → *Deploy test* → **Run workflow** → cocher **simuler_echec** → *Run*. Le workflow déploie
+la version, met en service une version défectueuse (`scripts/simulate-incident.sh`), les smoke tests échouent,
+puis le rollback automatique rétablit la version `stable` (visible dans le **Summary**).
+En ligne de commande : `gh workflow run deploy-test.yml -f simuler_echec=true`.
+
 ## 4. Accès et procédure
 
 - **En CI** : GitHub → **Actions** → *Deploy test* → dernier run → **Summary** (version, digest, smoke tests) et artefact.
