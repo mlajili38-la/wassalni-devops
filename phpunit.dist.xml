@@ -24,6 +24,7 @@
         </testsuite>
         <testsuite name="integration">
             <directory>tests/Integration</directory>
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
 
