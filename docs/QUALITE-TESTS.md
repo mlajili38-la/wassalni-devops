@@ -16,7 +16,7 @@ Chaque étape est **bloquante** : si elle échoue, le job échoue, le job `conta
 | 5 | Audit dependencies | `composer audit` | vulnérabilité connue dans une dépendance |
 | 6 | Prepare test database | migrations Doctrine sur MySQL 8.0 | migration invalide ou schéma désynchronisé |
 | 7 | Run tests with coverage | PHPUnit 12 + PCOV | un test échoue |
-| 8 | Coverage quality gate | `scripts/check-coverage.php` | couverture des lignes < `COVERAGE_MIN` (10 %) |
+| 8 | Coverage quality gate | `scripts/check-coverage.php` | couverture des lignes < `COVERAGE_MIN` (30 %) |
 
 Rapports archivés (artefact **`test-reports-<sha>`** de chaque exécution) :
 `junit.xml` (résultats), `testdox.txt` (lisible), `clover.xml` (couverture), `coverage-html/` (rapport navigable).
@@ -45,6 +45,7 @@ $env:XDEBUG_MODE = "coverage"; vendor/bin/phpunit --coverage-html build/reports/
 |---|---|---|---|
 | `unit` | `tests/Controller`, `tests/Service` | aucune (stubs/mocks) | `ReservationService` (7 cas), `HealthController` |
 | `integration` | `tests/Integration` | **MySQL `wassalni_test`** | réservation et annulation réelles, double réservation refusée par une vraie requête, unicité de l'email, contraintes de validation, requêtes HTTP (`/health`, pages publiques, redirection d'une page protégée) |
+| `integration` (fonctionnels) | `tests/Functional` | **MySQL `wassalni_test`** | 36 cas HTTP avec **utilisateur connecté** (`loginUser`) : contrôle d'accès par rôle (anonyme, passager, conducteur, admin), réservation HTML et API JSON (places, prix, annulation, réservation d'un autre refusée), recherche et publication de trajets, actions d'administration, confidentialité des réclamations, véhicules (propriétaire, jeton CSRF) |
 
 **Base de test distincte** : en environnement `test`, `config/packages/doctrine.yaml` ajoute le suffixe `_test`
 au nom de la base. Les tests n'utilisent donc jamais la base de développement ; un garde-fou dans `DatabaseTestCase` fait échouer le test si la base ne se termine pas par `_test`. Chaque test d'intégration
@@ -61,24 +62,41 @@ En CI, la base est un service MySQL 8.0 jetable, créé pour le job puis détrui
   - `Vehicule` : `Assert\Range(message: …)`, argument inexistant en Symfony 7 → `notInRangeMessage`.
 - Un **4e bug** du même type (`Assert\Length(message: …)` dans `User`) a été révélé par le test d'intégration de `/inscription`, puis corrigé.
 - Un **5e défaut** a été détecté par la CI (`doctrine:schema:validate`) : la relation `Trajet.vehicule` / `Vehicule.trajets` n'avait pas `inversedBy` côté `Trajet` (mapping invalide). Corrigé sans migration, car le schéma SQL ne change pas.
-- Les **58 erreurs restantes** sont gelées dans `phpstan-baseline.neon`. Ce sont surtout des écarts de typage
-  entre les propriétés nullables des entités et les colonnes `NOT NULL` (45), et des appels sur `UserInterface`
-  sans vérifier le type exact (`getUser()`). Elles ne bloquent pas le pipeline ; **toute nouvelle erreur le bloque**.
-  Objectif d'amélioration : réduire la baseline à chaque PR.
+- **58 erreurs** ont d'abord été gelées dans `phpstan-baseline.neon` : elles ne bloquent pas le pipeline,
+  mais **toute nouvelle erreur le bloque**. Objectif : réduire la baseline à chaque PR.
+
+### Réduction de la baseline : 58 → 37 erreurs (PR « réduction baseline PHPStan »)
+
+| Catégorie | Erreurs | Correction |
+|---|---|---|
+| `getUser()` renvoie `UserInterface` : appel de `getReservations()`, `getVehicules()`, `setPassager($this->getUser())`… sans vérifier le type | 8 | trait `UtilisateurConnecteTrait::utilisateurConnecte()` : vérifie une fois que l'utilisateur est un `App\Entity\User`, sinon accès refusé |
+| Collections Doctrine non typées (`Collection` au lieu de `Collection<int, Trajet>`) | 8 | annotations `@var Collection<int, …>` dans `User`, `Trajet`, `Vehicule` |
+| `LoginFormAuthenticator` : 2 dépendances injectées jamais utilisées, `isVerified()` sur `UserInterface`, `getFlashBag()` sur `SessionInterface` | 4 | dépendances supprimées, vérifications `instanceof User` et `FlashBagAwareSessionInterface` |
+| `tests/bootstrap.php` : `method_exists()` toujours vrai | 1 | appel direct de `bootEnv()` |
+
+**37 erreurs restent volontairement gelées** : toutes du type *type mapping mismatch* (une propriété d'entité
+déclarée `?string` alors que la colonne est `NOT NULL`). Les rendre non nullables obligerait à initialiser chaque
+propriété dans les constructeurs et casserait les formulaires Symfony, qui créent les entités vides avant de les remplir :
+le gain ne justifie pas ce risque sur le code métier. La règle reste : **aucune nouvelle erreur**.
 
 ## 5. Couverture
 
-Couverture actuelle : **11,45 % des lignes** (163/1424), 25,8 % des méthodes.
-Elle est faible parce que les contrôleurs volumineux (administration, trajets, tableaux de bord) n'ont pas de tests.
-Le service métier `ReservationService` et le health check sont couverts.
-Le seuil `COVERAGE_MIN` est fixé à **10 %** pour **empêcher toute régression** ; il est à relever au fur et
-à mesure de l'ajout de tests (prochaine cible : tests HTTP authentifiés des contrôleurs de réservation).
+| Mesure | Lignes couvertes | Seuil `COVERAGE_MIN` |
+|---|---|---|
+| Avant les tests fonctionnels | **11,45 %** (163/1424) | 10 % |
+| Après les tests fonctionnels (36 cas, PR « tests fonctionnels ») | **33,92 %** (483/1424) | **30 %** |
 
-## 6. Anomalies connues (non corrigées)
+Les tests fonctionnels couvrent les contrôleurs de réservation, de trajets, d'administration, de réclamations
+et de véhicules avec un utilisateur connecté. Restent peu couverts : l'inscription en plusieurs étapes,
+les tableaux de bord conducteur/passager, les avis et l'envoi d'e-mails.
+Le seuil fonctionne comme un **cliquet** : fixé environ 3 points sous la mesure, il empêche toute régression
+(du code ajouté sans test fait échouer la CI) tout en laissant une marge pour les refactorisations ; il est relevé à chaque gain de couverture.
+
+## 6. Anomalies connues
 
 | Anomalie | Impact | Décision |
 |---|---|---|
-| `UserRepository::findByRoles()` utilise `JSON_CONTAINS`, fonction inconnue de Doctrine DQL → `QueryException` | Aucun : la méthode n'est appelée nulle part | Documentée ; à supprimer ou réécrire si elle devient nécessaire |
+| `UserRepository::findByRoles()` utilisait `JSON_CONTAINS`, fonction inconnue de Doctrine DQL → `QueryException` | Aucun (méthode non appelée) | **Corrigée** : recherche du rôle dans le texte JSON (`LIKE '%"ROLE_X"%'`), couverte par le test d'intégration `testFindByRolesNeRetourneQueLesUtilisateursDuRole` |
 
 ## 7. Preuves
 

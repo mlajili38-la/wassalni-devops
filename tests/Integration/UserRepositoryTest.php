@@ -8,9 +8,6 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * Fonctionnalite metier n°2 : gestion des utilisateurs, avec la vraie base MySQL.
- *
- * Anomalie connue (non corrigee, methode non utilisee) : UserRepository::findByRoles()
- * utilise JSON_CONTAINS, fonction inconnue de Doctrine DQL -> QueryException.
  */
 class UserRepositoryTest extends DatabaseTestCase
 {
@@ -25,6 +22,21 @@ class UserRepositoryTest extends DatabaseTestCase
         self::assertInstanceOf(User::class, $user);
         self::assertContains('ROLE_ADMIN', $user->getRoles());
         self::assertSame('ACTIF', $user->getStatut());
+    }
+
+    public function testFindByRolesNeRetourneQueLesUtilisateursDuRole(): void
+    {
+        $this->creerUtilisateur('conducteur.role@test.local', ['ROLE_CONDUCTEUR']);
+        $this->creerUtilisateur('passager.role@test.local', ['ROLE_PASSAGER']);
+        $this->creerUtilisateur('mixte.role@test.local', ['ROLE_PASSAGER', 'ROLE_CONDUCTEUR']);
+        $this->em->flush();
+
+        $conducteurs = self::getContainer()->get(UserRepository::class)->findByRoles('ROLE_CONDUCTEUR');
+        $emails = array_map(static fn (User $u): ?string => $u->getEmail(), $conducteurs);
+
+        self::assertContains('conducteur.role@test.local', $emails);
+        self::assertContains('mixte.role@test.local', $emails);
+        self::assertNotContains('passager.role@test.local', $emails);
     }
 
     public function testEmailUniqueImposeParLaBase(): void

@@ -6,7 +6,7 @@
 |---|---|---|
 | 1. Git et collaboration | dépôt structuré, GitHub Flow, Conventional Commits, une branche et une PR par sujet, `CONTRIBUTING.md`, modèle de PR | historique Git, PR #1 à #5 et #15 à #19 (les #6 à #14 sont des PR Dependabot) |
 | 2. CI et build | pipeline as code, déclenché sur push et PR, jobs dépendants, cache Composer et Trivy, image versionnée par SHA | onglet Actions |
-| 3. Qualité et tests | PHP-CS-Fixer, PHPStan niveau 5 (baseline), 21 tests dont 13 d'intégration sur une base MySQL `wassalni_test`, couverture PCOV, règles bloquantes, rapports archivés | `docs/QUALITE-TESTS.md`, `docs/preuves/lot3-quality-gates.txt` |
+| 3. Qualité et tests | PHP-CS-Fixer, PHPStan niveau 5 (baseline), 58 tests dont 36 fonctionnels avec utilisateur connecté et 13 d'intégration sur une base MySQL `wassalni_test`, couverture PCOV, règles bloquantes, rapports archivés | `docs/QUALITE-TESTS.md`, `docs/preuves/lot3-quality-gates.txt` |
 | 4. Conteneurisation | `Dockerfile` durci, `compose.yaml` (app + MySQL, réseau, volume, healthchecks), migrations au démarrage, image publiée dans GHCR | `docs/preuves/lot4-docker-mysql.txt`, packages GHCR |
 | 5. Sécurité | Gitleaks, Trivy (dépendances + image), `composer audit`, Dependabot + alertes ; 60 → 0 vulnérabilités Composer ; image 1524 → 454 vulnérabilités, 6 → 0 HIGH/CRITICAL corrigeables ; matrice des secrets | `docs/SECURITE.md`, `docs/preuves/lot5-securite.txt` |
 | 6. Déploiement | déploiement automatique de l'image **GHCR** après chaque CI verte sur `main`, déclenchement manuel, vérification des conteneurs, des migrations, de `/health` et des smoke tests, trace de la version | `docs/DEPLOIEMENT.md`, `docs/preuves/lot6-deploiement.txt` |
@@ -26,6 +26,8 @@
 | 9 | 4 CVE CRITICAL (Apache) + 2 HIGH (zlib) dans l'image | Trivy | PR #5 : durcissement du Dockerfile |
 | 10 | 9 montées de version majeure proposées par Dependabot, dont 5 cassent la CI | CI | non fusionnées ; PR #17 : majeures ignorées |
 | 11 | Tag `latest` publié dans le désordre (`latest` → `c311d47`, plus ancien que `30ba83a`) quand deux CI de `main` tournent en parallèle | lecture des preuves de l'exercice d'incident | PR #18 : publication sérialisée par branche |
+| 12 | `UserRepository::findByRoles()` en échec (`JSON_CONTAINS` inconnue de DQL) | test d'intégration | réécrite avec une recherche dans le texte JSON, test ajouté |
+| 13 | 21 erreurs de typage (utilisateur connecté non vérifié, collections non typées, dépendances inutiles) | PHPStan (baseline) | baseline réduite de 58 à 37 erreurs |
 
 ## 3. Difficultés rencontrées
 
@@ -47,12 +49,11 @@
   La règle « pas de push direct, PR + CI verte » a été **respectée en pratique** (toutes les fusions passent par une PR verte), mais elle n'est pas imposée par la plateforme.
 - **Approbation manuelle** : remplacée par le déclenchement manuel `workflow_dispatch` (pas de relecteurs obligatoires sans Pro).
 - **Environnement de test éphémère** (choix du projet) : pas d'URL permanente ; les preuves sont les runs, résumés et artefacts.
-- **Couverture de tests faible : 11,45 % des lignes.** Les contrôleurs volumineux ne sont pas testés ; le seuil (10 %) empêche seulement la régression.
-- **Baseline PHPStan de 58 erreurs** (typage des entités) non résorbée.
+- **Couverture de tests moyenne : 33,92 % des lignes** (11,45 % avant les tests fonctionnels). Restent peu couverts : inscription en plusieurs étapes, tableaux de bord, avis, e-mails. Seuil anti-régression relevé à 30 %.
+- **Baseline PHPStan de 37 erreurs** (réduite de 58) : uniquement des propriétés d'entités nullables face à des colonnes `NOT NULL`, gelées volontairement (voir `docs/QUALITE-TESTS.md` § 4).
 - **Risque résiduel image** : 1 CRITICAL et 121 HIGH sans correctif Debian publié.
 - **Revue de code** : projet individuel, les PR sont auto-relues (description, checklist, CI), sans second relecteur.
 - `scripts/rollback.ps1` (Windows) n'a pas été rejoué ; la procédure démontrée est `scripts/rollback.sh`.
-- `UserRepository::findByRoles()` est cassée (fonction `JSON_CONTAINS` inconnue de Doctrine) ; non utilisée, documentée.
 
 ## 5. Indicateurs de suivi (au 12/11/2026)
 
@@ -61,7 +62,7 @@
 | Taux de réussite CI | 61 % sur 31 exécutions. Les échecs sont : 5 sur `main` avant la PR #1 (mise en place), 5 sur des PR Dependabot majeures (bloquées volontairement), 2 sur des branches corrigées avant fusion. **100 % sur `main` depuis la PR #1** |
 | Durée moyenne d'exécution | CI ≈ 2 min 15 (moyenne), Deploy test ≈ 1 min, Incident drill ≈ 2 min 30 |
 | Fréquence | 19 PR (dont 9 Dependabot) ; un déploiement en test automatique par fusion sur `main` |
-| Couverture | 11,45 % des lignes, 25,8 % des méthodes |
+| Couverture | 11,45 % → **33,92 %** des lignes après les tests fonctionnels (seuil 10 % → 30 %) |
 | Défauts détectés | 11 (tableau § 2), dont 10 avant tout déploiement |
 | Vulnérabilités | Composer 60 → 0 ; image : 6 HIGH/CRITICAL corrigeables → 0 |
 | Échec des déploiements en test | 0 sur 9 exécutions de *Deploy test* (automatiques, manuelles et sur PR) |
@@ -70,7 +71,7 @@
 ## 6. Améliorations proposées
 
 1. Passer le dépôt en public ou utiliser GitHub Pro (Student Pack) : protection de `main`, relecteurs obligatoires, environnement `test` avec approbation.
-2. Augmenter la couverture : tests HTTP authentifiés (réservation, administration) puis relever `COVERAGE_MIN` ; résorber la baseline PHPStan.
+2. Poursuivre la couverture (inscription, tableaux de bord, avis) et relever `COVERAGE_MIN` à chaque gain ; résorber la baseline PHPStan.
 3. Environnement de test persistant gratuit (VM ou PaaS) avec URL, et déploiement *blue/green* pour éviter l'interruption pendant une mise en service.
 4. Image plus légère (Alpine ou distroless + PHP-FPM) pour réduire les vulnérabilités résiduelles.
 5. Supervision continue : Prometheus/Grafana ou Uptime Kuma, alertes, et ajout de la version dans la réponse de `/health`.

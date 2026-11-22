@@ -63,6 +63,7 @@ class Trajet
     private ?Vehicule $vehicule = null;
 
     #[ORM\OneToMany(mappedBy: 'trajet', targetEntity: Reservation::class, cascade: ['remove'])]
+    /** @var Collection<int, Reservation> */
     private Collection $reservations;
 
     public function __construct()

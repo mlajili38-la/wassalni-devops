@@ -30,7 +30,7 @@ au premier échec, le job s'arrête en rouge et les jobs qui en dépendent ne s'
 | Audit dependencies | `composer.lock` | liste des avis | vulnérabilité connue |
 | Prepare test database | service MySQL 8.0 jetable | base `wassalni_test` migrée | migration en échec, mapping ou schéma invalide |
 | Unit + integration tests with coverage | tests, base de test | `junit.xml`, `testdox.txt`, `clover.xml`, `coverage-html/` | un test échoue |
-| Coverage quality gate | `clover.xml` | taux de couverture | couverture < `COVERAGE_MIN` (10 %) |
+| Coverage quality gate | `clover.xml` | taux de couverture | couverture < `COVERAGE_MIN` (30 %) |
 | Archive reports | `build/reports/` | artefact `test-reports-<sha>` | — |
 
 ## 2. Workflow CI — job `security` (« Security scans (secrets and dependencies) »)

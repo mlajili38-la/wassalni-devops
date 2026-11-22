@@ -17,11 +17,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/avis')]
 class AvisController extends AbstractController
 {
+    use UtilisateurConnecteTrait;
+
     #[Route('/nouveau/{id}', name: 'avis_new')]
     #[IsGranted('ROLE_PASSAGER')]
     public function new(Trajet $trajet, Request $request, EntityManagerInterface $em): Response
     {
-        $user = $this->getUser();
+        $user = $this->utilisateurConnecte();
 
         // Vérifier que le passager a bien réservé ce trajet
         $aReserve = false;

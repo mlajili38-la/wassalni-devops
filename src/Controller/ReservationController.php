@@ -17,6 +17,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/reservation')]
 class ReservationController extends AbstractController
 {
+    use UtilisateurConnecteTrait;
+
     #[Route('/new/{id}', name: 'reservation_new', methods: ['POST'])]
     #[IsGranted('ROLE_PASSAGER')]
     public function new(Trajet $trajet, Request $request, EntityManagerInterface $em): Response
@@ -30,7 +32,7 @@ class ReservationController extends AbstractController
         }
 
         $reservation = new Reservation();
-        $reservation->setPassager($this->getUser());
+        $reservation->setPassager($this->utilisateurConnecte());
         $reservation->setTrajet($trajet);
         $reservation->setNbPlaces($nbPlaces);
         $reservation->setDateReservation(new \DateTime());
@@ -154,7 +156,7 @@ class ReservationController extends AbstractController
 
         // Créer la réservation
         $reservation = new Reservation();
-        $reservation->setPassager($this->getUser());
+        $reservation->setPassager($this->utilisateurConnecte());
         $reservation->setTrajet($trajet);
         $reservation->setNbPlaces($nbPlaces);
         $reservation->setDateReservation(new \DateTime());

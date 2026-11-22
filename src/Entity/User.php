@@ -53,15 +53,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $dateInscription = null;
 
     #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Trajet::class)]
+    /** @var Collection<int, Trajet> */
     private Collection $trajets;
 
     #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Reservation::class)]
+    /** @var Collection<int, Reservation> */
     private Collection $reservations;
 
     #[ORM\OneToMany(mappedBy: 'proprietaire', targetEntity: Vehicule::class)]
+    /** @var Collection<int, Vehicule> */
     private Collection $vehicules;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Reclamation::class)]
+    /** @var Collection<int, Reclamation> */
     private Collection $reclamations;
 
     public function __construct()
@@ -380,9 +384,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->verificationTokenExpiresAt = new \DateTime('+24 hours');
     }
     #[ORM\OneToMany(mappedBy: 'passager', targetEntity: Avis::class)]
+    /** @var Collection<int, Avis> */
     private Collection $avisDonnes;
 
     #[ORM\OneToMany(mappedBy: 'conducteur', targetEntity: Avis::class)]
+    /** @var Collection<int, Avis> */
     private Collection $avisRecus;
 
     public function getAvisDonnes(): Collection

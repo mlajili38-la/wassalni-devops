@@ -15,6 +15,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_CONDUCTEUR')]
 class VehiculeController extends AbstractController
 {
+    use UtilisateurConnecteTrait;
+
     #[Route('/mes-vehicules', name: 'vehicule_index')]
     public function index(EntityManagerInterface $em): Response
     {
@@ -35,7 +37,7 @@ class VehiculeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $vehicule->setProprietaire($this->getUser());
+            $vehicule->setProprietaire($this->utilisateurConnecte());
             $vehicule->setDateAjout(new \DateTime());
 
             $em->persist($vehicule);

@@ -1,48 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getReservations\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Controller/AvisController.php
-
-		-
-			message: '#^Parameter \#1 \$passager of method App\\Entity\\Avis\:\:setPassager\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/AvisController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Entity\\Reclamation\:\:setUser\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/ReclamationController.php
-
-		-
-			message: '#^Parameter \#1 \$passager of method App\\Entity\\Reservation\:\:setPassager\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
-			identifier: argument.type
-			count: 2
-			path: src/Controller/ReservationController.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getVehicules\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Controller/TrajetController.php
-
-		-
-			message: '#^Parameter \#1 \$conducteur of method App\\Entity\\Trajet\:\:setConducteur\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/TrajetController.php
-
-		-
-			message: '#^Parameter \#1 \$proprietaire of method App\\Entity\\Vehicule\:\:setProprietaire\(\) expects App\\Entity\\User\|null, Symfony\\Component\\Security\\Core\\User\\UserInterface\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Controller/VehiculeController.php
-
-		-
 			message: '#^Property App\\Entity\\Avis\:\:\$conducteur type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
 			identifier: doctrine.associationType
 			count: 1
@@ -311,33 +269,3 @@ parameters:
 			identifier: doctrine.associationType
 			count: 1
 			path: src/Entity/Vehicule.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Session\\SessionInterface\:\:getFlashBag\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Security/LoginFormAuthenticator.php
-
-		-
-			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:isVerified\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Security/LoginFormAuthenticator.php
-
-		-
-			message: '#^Property App\\Security\\LoginFormAuthenticator\:\:\$csrfTokenManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Security/LoginFormAuthenticator.php
-
-		-
-			message: '#^Property App\\Security\\LoginFormAuthenticator\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Security/LoginFormAuthenticator.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''Symfony\\\\Component\\\\Dotenv\\\\Dotenv'' and ''bootEnv'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/bootstrap.php

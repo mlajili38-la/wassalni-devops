@@ -17,12 +17,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/reclamation')]
 class ReclamationController extends AbstractController
 {
+    use UtilisateurConnecteTrait;
+
     #[Route('/nouvelle', name: 'reclamation_new')]
     #[IsGranted('ROLE_USER')]
     // bech tasn3elna new reclamation
     public function new(Request $request, EntityManagerInterface $em, TrajetRepository $trajetRepo, UserRepository $userRepo): Response
     {
-        $user = $this->getUser();
+        $user = $this->utilisateurConnecte();
 
         $reclamation = new Reclamation();
         $reclamation->setUser($user);
