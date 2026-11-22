@@ -56,7 +56,7 @@ jobs:
       DEPLOY_DIR: build/deploy
     steps:
       - name: Checkout deployment files of the deployed version
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
@@ -115,7 +115,7 @@ jobs:
 
       - name: Archive deployment record and logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: deploy-test-${{ github.run_id }}
           path: build/deploy/

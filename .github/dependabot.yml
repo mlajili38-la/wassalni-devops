@@ -1,6 +1,6 @@
 # Dependabot : propose automatiquement des Pull Requests de mise a jour (Lot 5).
 # Chaque PR Dependabot passe par le meme pipeline (tests, Gitleaks, Trivy) avant fusion.
-# Les montees de version MAJEURE sont ignorees : elles changent la pile technique
+# Les montees de version MAJEURE sont ignorees pour Composer et Docker : elles changent la pile technique
 # (ex. Symfony 7.4 -> 8, PHP 8.3 -> 8.5) et doivent faire l'objet d'une decision et d'une branche dediees.
 # Les correctifs de securite restent proposes (alertes Dependabot actives).
 version: 2
@@ -27,12 +27,11 @@ updates:
       - dependency-name: "php"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
 
+  # Actions GitHub : les montees MAJEURES sont acceptees (elles suivent les versions de Node.js
+  # des runners, ex. Node 20 -> Node 24) ; chaque PR repasse tout le pipeline avant fusion.
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
     commit-message:
       prefix: "ci(deps)"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]

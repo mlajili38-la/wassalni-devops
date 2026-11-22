@@ -30,3 +30,8 @@
 ###> rapports CI (generes) ###
 /build/
 ###< rapports CI ###
+###> playwright (rapports generes) ###
+/tests/e2e/playwright-report/
+/tests/e2e/test-results/
+/tests/e2e/node_modules/
+###< playwright ###
